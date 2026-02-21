@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Search, Plus, Settings, Ban, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from "react";
 
 // --- Types ---
 type UserStatus = 'active' | 'blocked' | 'pending';
@@ -24,14 +25,14 @@ interface User {
   initials: string;
 }
 
-// --- Mock Data ---
-const ROLES: Role[] = [
-  { name: 'Super Admin', description: 'Full Access', count: 2, isActive: true },
-  { name: 'Salon Admin', description: 'Salon Management', count: 89 },
-  { name: 'Branch Manager', description: 'Branch Operations', count: 234 },
-  { name: 'Staff', description: 'Booking & Services', count: 1847 },
-  { name: 'Receptionist', description: 'Front Desk', count: 562 },
-];
+// // --- Mock Data ---
+// const ROLES: Role[] = [
+//   { name: 'Super Admin', description: 'Full Access', count: 2, isActive: true },
+//   { name: 'Salon Admin', description: 'Salon Management', count: 89 },
+//   { name: 'Branch Manager', description: 'Branch Operations', count: 234 },
+//   { name: 'Staff', description: 'Booking & Services', count: 1847 },
+//   { name: 'Receptionist', description: 'Front Desk', count: 562 },
+// ];
 
 const USERS: User[] = [
   { id: '1', name: 'Priya Sharma', email: 'priya@luxebeauty.com', role: 'Salon Admin', company: 'Luxe Beauty Studio', status: 'active', lastActive: '2 min ago', initials: 'PS' },
@@ -43,7 +44,26 @@ const USERS: User[] = [
   { id: '7', name: 'Deepa Nair', email: 'deepa@bloom.com', role: 'Staff', company: 'Bloom & Glow', status: 'pending', lastActive: 'Never', initials: 'DN' },
 ];
 
+const ROLES: Role[] = [
+  { name: 'Super Admin', description: 'Full Access', count: 2, isActive: true },
+  { name: 'Salon Admin', description: 'Salon Management', count: 89 },
+  { name: 'Branch Manager', description: 'Branch Operations', count: 234 },
+  { name: 'Staff', description: 'Booking & Services', count: 1847 },
+  { name: 'Receptionist', description: 'Front Desk', count: 562 },
+];
+
 export default function UserManagementPage() {
+    const [users, setUsers] = useState<User[]>([]);
+
+useEffect(() => {
+  fetch("http://localhost:3001/api/superdashboard/users")
+    .then(res => res.json())
+    .then(data => {
+      setUsers(data.users);
+    })
+    .catch(err => console.error(err));
+}, []);
+
   return (
     <div className="min-h-screen bg-[#FDFBF3] p-10 font-sans text-[#433E37]">
       {/* Header Section */}
@@ -116,7 +136,7 @@ export default function UserManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#FAF9F6]">
-              {USERS.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id} className="hover:bg-[#FDFBF3]/50 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">

@@ -9,7 +9,7 @@ import { ref, set, get, query, orderByChild, equalTo } from "firebase/database";
 import jwt from "jsonwebtoken";
 
 const auth = getAuth();
-import { logActivity } from "../controllers/activityLogController.js";
+import { logActivity } from "./activityLogController.js";
 import { generateOTP, sendOTPEmail } from "../utils/otpEmail.js";
 
 // Allowed roles

@@ -30,6 +30,7 @@ import businessDetails from "./routes/businessDetails.routes.js";
 import contactRoutes from './routes/contactRoutes.js';
 import SuperAdmindashboardRoutes from "./routes/superadmin-dashboardRoutes.js";
 import  salonRoutes from "./routes/salonRoutes.js";
+import userManagementRoutes from "./routes/userManagementRoutes.js";
 
 dotenv.config();
 
@@ -128,6 +129,9 @@ app.use("/api/admin", calendarSettingsRoutes);
 app.use("/api/admin", businessDetails);
 app.use("/api/superdashboard", SuperAdmindashboardRoutes);
 app.use( "/api/salon", salonRoutes);
+app.use("/api/superdashboard", userManagementRoutes);
+
+
 /* -------------------- SERVER -------------------- */
 app.listen(env.PORT, () => {
   console.log(`Server running on port ${env.PORT}`);
