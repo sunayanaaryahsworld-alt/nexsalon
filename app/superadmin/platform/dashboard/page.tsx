@@ -1,10 +1,8 @@
+//.........................................................................................................................//
 "use client";
+import { useState, useEffect } from "react";
 
-import { useState } from "react";
-
-/* ─────────────────────────────────────────
-   TYPES
-───────────────────────────────────────── */
+/* ───────────────────────────────────────── TYPES ───────────────────────────────────────── */
 interface Stat {
   label: string;
   value: string;
@@ -13,7 +11,6 @@ interface Stat {
   gold?: boolean;
   icon: React.ReactNode;
 }
-
 interface Salon {
   rank: number;
   name: string;
@@ -22,334 +19,266 @@ interface Salon {
   trend: string;
   up: boolean;
 }
-
 interface HealthItem {
   label: string;
   pct: number;
   color: string;
 }
-
 interface Plan {
   label: string;
   count: number;
   color: string;
 }
 
-/* ─────────────────────────────────────────
-   STAT CARDS DATA
-───────────────────────────────────────── */
-const STATS: Stat[] = [
-  {
-    label: "Total Salons & Spas",
-    value: "312",
-    trend: "+14%",
-    up: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M3 7h18v13H3z" />
-        <path d="M8 7V5a4 4 0 0 1 8 0v2" />
-      </svg>
-    ),
-  },
-  {
-    label: "Active Branches",
-    value: "847",
-    trend: "+8%",
-    up: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
-  {
-    label: "Total Customers",
-    value: "1.24M",
-    trend: "+22%",
-    up: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-  },
-  {
-    label: "Platform Revenue",
-    value: "₹84.2L",
-    trend: "+18%",
-    up: true,
-    gold: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <line x1="12" y1="1" x2="12" y2="23" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    ),
-  },
-  {
-    label: "Active Subscriptions",
-    value: "259",
-    trend: "+11%",
-    up: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="1" y="4" width="22" height="16" rx="2" />
-        <line x1="1" y1="10" x2="23" y2="10" />
-      </svg>
-    ),
-  },
-  {
-    label: "Pending Approvals",
-    value: "7",
-    trend: "-30%",
-    up: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-  },
-  {
-    label: "MRR",
-    value: "₹18.4L",
-    trend: "+16%",
-    up: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-        <polyline points="17 6 23 6 23 12" />
-      </svg>
-    ),
-  },
-  {
-    label: "System Uptime",
-    value: "99.8%",
-    trend: "+0.1%",
-    up: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-    ),
-  },
-];
-
-/* ─────────────────────────────────────────
-   TOP SALONS DATA
-───────────────────────────────────────── */
-const TOP_SALONS: Salon[] = [
-  { rank: 1, name: "Luxe Beauty Studio", city: "Mumbai",    revenue: "₹2.4L", trend: "+18%", up: true  },
-  { rank: 2, name: "Velvet Touch Spa",   city: "Bangalore", revenue: "₹1.9L", trend: "+12%", up: true  },
-  { rank: 3, name: "Golden Hour Salon",  city: "Delhi",     revenue: "₹1.7L", trend: "+8%",  up: true  },
-  { rank: 4, name: "Aura Wellness",      city: "Pune",      revenue: "₹1.4L", trend: "-3%",  up: false },
-  { rank: 5, name: "The Refinery",       city: "Chennai",   revenue: "₹1.2L", trend: "+22%", up: true  },
-];
-
-/* ─────────────────────────────────────────
-   SYSTEM HEALTH DATA
-───────────────────────────────────────── */
+/* ───────────────────────────────────────── SYSTEM HEALTH DATA ───────────────────────────────────────── */
 const HEALTH: HealthItem[] = [
-  { label: "API",     pct: 99.9, color: "#27ae60" },
-  { label: "DB",      pct: 99.7, color: "#27ae60" },
+  { label: "API",     pct: 99.9, color: "#22c55e" },
+  { label: "DB",      pct: 99.7, color: "#22c55e" },
   { label: "Storage", pct: 98.4, color: "#c8922a" },
-  { label: "CDN",     pct: 99.8, color: "#27ae60" },
+  { label: "CDN",     pct: 99.8, color: "#22c55e" },
 ];
 
-/* ─────────────────────────────────────────
-   CHART DATA
-───────────────────────────────────────── */
-const MONTHS = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb"];
+/* ───────────────────────────────────────── CHART DATA ───────────────────────────────────────── */
+const MONTHS      = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb"];
 const REVENUE_PTS = [340, 320, 305, 295, 285, 265, 230];
-const BAR_DATA = [190, 210, 200, 230, 215, 240, 260];
+const BAR_DATA    = [190, 210, 200, 230, 215, 240, 260];
 
-/* ─────────────────────────────────────────
-   DONUT PLAN DATA
-───────────────────────────────────────── */
-const PLANS: Plan[] = [
-  { label: "Enterprise", count: 42,  color: "#c8922a" },
-  { label: "Pro",        count: 128, color: "#5c3d1a" },
-  { label: "Starter",    count: 89,  color: "#c9b89a" },
-  { label: "Trial",      count: 53,  color: "#e8d5b0" },
-];
-const TOTAL_PLANS = PLANS.reduce((s, p) => s + p.count, 0);
+/* ───────────────────────────────────────── PLAN COLORS ───────────────────────────────────────── */
+const PLAN_COLORS: Record<string, string> = {
+  Enterprise: "#c8922a",
+  Pro:        "#5c3d1a",
+  Starter:    "#c9b89a",
+  Trial:      "#e8d5b0",
+};
 
-/* ─────────────────────────────────────────
-   CARD COMPONENT
-───────────────────────────────────────── */
+/* ───────────────────────────────────────── HELPERS ───────────────────────────────────────── */
+function formatINR(amount: number): string {
+  if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
+  if (amount >= 1000)   return `₹${(amount / 1000).toFixed(1)}K`;
+  return `₹${amount}`;
+}
+
+/* ───────────────────────────────────────── CARD COMPONENT ───────────────────────────────────────── */
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white border border-[#e8e0d4] rounded-xl p-5 ${className}`}>
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e8e0d0",
+        borderRadius: 16,
+        padding: 24,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      }}
+      className={className}
+    >
       {children}
     </div>
   );
 }
 
-/* ─────────────────────────────────────────
-   STAT CARD
-───────────────────────────────────────── */
+/* ───────────────────────────────────────── ICON BUBBLE ───────────────────────────────────────── */
+function IconBubble({ gold, children }: { gold?: boolean; children: React.ReactNode }) {
+  return (
+    <div style={{
+      width: 44,
+      height: 44,
+      borderRadius: "50%",
+      background: gold ? "#c8922a" : "#f0ebe0",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 20,
+      flexShrink: 0,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────── STAT CARD ───────────────────────────────────────── */
 function StatCard({ stat }: { stat: Stat }) {
   return (
     <Card>
-      <div className="flex justify-between items-start">
-        <span className="text-xs text-[#7a6a55]">{stat.label}</span>
-        <div
-          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
-            ${stat.gold ? "bg-[#c8922a] text-white" : "bg-[#f7f4ef] text-[#7a6a55]"}`}
-        >
-          {stat.icon}
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <span style={{ fontSize: 13, color: "#7a6a50", fontWeight: 500 }}>{stat.label}</span>
+        <IconBubble gold={stat.gold}>{stat.icon}</IconBubble>
       </div>
-      <div
-        className={`text-[26px] font-semibold mt-2 tracking-tight
-          ${stat.gold ? "text-[#c8922a]" : "text-[#1a1208]"}`}
-      >
+      <div style={{
+        fontSize: 30,
+        fontWeight: 700,
+        color: stat.gold ? "#c8922a" : "#1a1208",
+        marginTop: 10,
+        letterSpacing: "-0.5px",
+      }}>
         {stat.value}
       </div>
-      <div className="flex gap-1 text-xs text-[#7a6a55] mt-1">
-        <span className={`font-medium ${stat.up ? "text-[#2d7a4f]" : "text-[#c0392b]"}`}>
-          {stat.up ? "↑" : "↓"} {stat.trend}
-        </span>
-        vs last month
+      <div style={{
+        fontSize: 12,
+        color: stat.up ? "#22c55e" : "#ef4444",
+        marginTop: 6,
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+      }}>
+        <span>{stat.up ? "↗" : "↘"}</span>
+        <span style={{ fontWeight: 600 }}>{stat.trend}</span>
+        <span style={{ color: "#9a8a70" }}>vs last month</span>
       </div>
     </Card>
   );
 }
 
-/* ─────────────────────────────────────────
-   REVENUE CHART
-───────────────────────────────────────── */
+/* ───────────────────────────────────────── REVENUE CHART ───────────────────────────────────────── */
 function RevenueChart() {
-  const w = 500, h = 200;
-  const xStep = w / (MONTHS.length - 1);
-  const minV = 220, maxV = 360;
-  const toY = (v: number) => h - ((v - minV) / (maxV - minV)) * (h - 20) - 5;
-
-  const pts = REVENUE_PTS.map((v, i) => `${i * xStep},${toY(v)}`).join(" ");
-  const fillPts = `0,${h} ${pts} ${w},${h}`;
-
-  return (
-    <div className="w-full overflow-x-hidden">
-      <svg viewBox={`0 0 ${w} ${h + 30}`} className="w-full" preserveAspectRatio="none">
-        {[0, 25000, 50000, 75000, 100000].map((val, i) => {
-          const y = h - (i / 4) * (h - 10);
-          return (
-            <g key={val}>
-              <line x1="0" y1={y} x2={w} y2={y} stroke="#ede5d8" strokeWidth="1" />
-              <text x="0" y={y - 3} fontSize="9" fill="#b0a090">
-                {val === 0 ? "0" : val >= 1000 ? `${val / 1000}k` : val}
-              </text>
-            </g>
-          );
-        })}
-
-        <polygon points={fillPts} fill="#c8922a" opacity="0.08" />
-
-        <polyline
-          points={pts}
-          fill="none"
-          stroke="#c8922a"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        {REVENUE_PTS.map((v, i) => (
-          <circle
-            key={i}
-            cx={i * xStep}
-            cy={toY(v)}
-            r={i === REVENUE_PTS.length - 1 ? 5 : 3.5}
-            fill="#c8922a"
-            stroke="#fff"
-            strokeWidth="1.5"
-          />
-        ))}
-
-        {MONTHS.map((m, i) => (
-          <text key={m} x={i * xStep} y={h + 22} fontSize="10" fill="#b0a090" textAnchor="middle">
-            {m}
-          </text>
-        ))}
-      </svg>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────
-   DONUT CHART
-───────────────────────────────────────── */
-function DonutChart() {
-  const r = 54, cx = 70, cy = 70;
-  const circ = 2 * Math.PI * r;
-
-  let cumulative = 0;
-  const segments = PLANS.map((p) => {
-    const pct = p.count / TOTAL_PLANS;
-    const dash = pct * circ;
-    const gap = circ - dash;
-    const offset = -cumulative * circ;
-    cumulative += pct;
-    return { ...p, dash, gap, offset };
-  });
+  const w = 560, h = 200;
+  const padL = 48, padB = 24, padR = 8, padT = 10;
+  const chartW = w - padL - padR;
+  const chartH = h - padT - padB;
+  const xStep  = chartW / (MONTHS.length - 1);
+  const minV = 200, maxV = 380;
+  const toY  = (v: number) => padT + chartH - ((v - minV) / (maxV - minV)) * chartH;
+  const toX  = (i: number) => padL + i * xStep;
+  const pts  = REVENUE_PTS.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
+  const fillPts = `${padL},${h - padB} ${pts} ${toX(MONTHS.length - 1)},${h - padB}`;
+  const gridLines = [0, 25000, 50000, 75000, 100000];
 
   return (
-    <svg width="140" height="140" viewBox="0 0 140 140">
-      {segments.map((s) => (
-        <circle
-          key={s.label}
-          cx={cx}
-          cy={cy}
-          r={r}
-          fill="none"
-          stroke={s.color}
-          strokeWidth="22"
-          strokeDasharray={`${s.dash} ${s.gap}`}
-          strokeDashoffset={s.offset}
-          transform="rotate(-90 70 70)"
-        />
+    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", height: "auto" }}>
+      <defs>
+        <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor="#c8922a" stopOpacity={0.18} />
+          <stop offset="100%" stopColor="#c8922a" stopOpacity={0}    />
+        </linearGradient>
+      </defs>
+
+      {/* Grid lines */}
+      {gridLines.map((val, i) => {
+        const pct = i / (gridLines.length - 1);
+        const y   = padT + chartH - pct * chartH;
+        return (
+          <g key={i}>
+            <line x1={padL} y1={y} x2={w - padR} y2={y} stroke="#e8e0d0" strokeWidth={1} strokeDasharray="4 3" />
+            <text x={padL - 6} y={y + 4} fill="#9a8a70" fontSize={9} textAnchor="end">
+              {val === 0 ? "0" : val >= 1000 ? `${val / 1000}k` : val}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Fill */}
+      <polygon points={fillPts} fill="url(#revGrad)" />
+
+      {/* Line */}
+      <polyline points={pts} fill="none" stroke="#c8922a" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+
+      {/* Dots */}
+      {REVENUE_PTS.map((v, i) => (
+        <circle key={i} cx={toX(i)} cy={toY(v)} r={3.5} fill="#c8922a" />
       ))}
-      <text x={cx} y={cy - 4} textAnchor="middle" fontSize="14" fontWeight="600" fill="#1a1208">
-        {TOTAL_PLANS}
-      </text>
-      <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="#7a6a55">
-        Active
-      </text>
+
+      {/* X labels */}
+      {MONTHS.map((m, i) => (
+        <text key={i} x={toX(i)} y={h - 4} fill="#9a8a70" fontSize={10} textAnchor="middle">{m}</text>
+      ))}
     </svg>
   );
 }
 
-/* ─────────────────────────────────────────
-   SUBSCRIPTION GROWTH BARS
-───────────────────────────────────────── */
-function SubGrowthBars() {
-  const maxVal = Math.max(...BAR_DATA);
-  const barH = 80;
+/* ───────────────────────────────────────── DONUT CHART ───────────────────────────────────────── */
+function DonutChart({ plans }: { plans: Plan[] }) {
+  const total = plans.reduce((s, p) => s + p.count, 0);
+  const r = 54, cx = 70, cy = 70;
+  const circ = 2 * Math.PI * r;
+  let cumulative = 0;
+
+  const segments = plans.map((p) => {
+    const pct    = total > 0 ? p.count / total : 0;
+    const dash   = pct * circ;
+    const gap    = circ - dash;
+    const offset = -cumulative * circ;
+    cumulative  += pct;
+    return { ...p, dash, gap, offset };
+  });
 
   return (
-    <div className="w-full overflow-x-hidden">
-      <svg viewBox="0 0 420 110" className="w-full">
-        {[80, 320].map((v, i) => (
-          <text key={v} x="0" y={i === 0 ? 85 : 12} fontSize="9" fill="#b0a090">
-            {v}
-          </text>
-        ))}
+    <svg viewBox="0 0 140 140" style={{ width: 140, height: 140 }}>
+      {/* Track */}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f0ebe0" strokeWidth={16} />
+      {segments.map((s, i) => (
+        <circle
+          key={i}
+          cx={cx} cy={cy} r={r}
+          fill="none"
+          stroke={s.color}
+          strokeWidth={16}
+          strokeDasharray={`${s.dash} ${s.gap}`}
+          strokeDashoffset={s.offset}
+          style={{ transform: "rotate(-90deg)", transformOrigin: `${cx}px ${cy}px` }}
+        />
+      ))}
+      <text x={cx} y={cy - 6}  fill="#1a1208" fontSize={16} fontWeight={700} textAnchor="middle">{total}</text>
+      <text x={cx} y={cy + 10} fill="#9a8a70" fontSize={9}  textAnchor="middle">Active</text>
+    </svg>
+  );
+}
 
+/* ───────────────────────────────────────── SYSTEM HEALTH GRID ───────────────────────────────────────── */
+function SystemHealthGrid() {
+  const items = [
+    { label: "API",     pct: 99.9, color: "#22c55e" },
+    { label: "DB",      pct: 99.7, color: "#22c55e" },
+    { label: "Storage", pct: 98.4, color: "#c8922a" },
+    { label: "CDN",     pct: 99.8, color: "#22c55e" },
+  ];
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 24px" }}>
+      {items.map((h) => (
+        <div key={h.label}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            <span style={{ color: "#7a6a50", fontSize: 13 }}>{h.label}</span>
+            <span style={{ color: h.color, fontSize: 13, fontWeight: 700 }}>{h.pct}%</span>
+          </div>
+          <div style={{ background: "#f0ebe0", borderRadius: 4, height: 7 }}>
+            <div style={{ background: h.color, borderRadius: 4, height: 7, width: `${h.pct}%`, transition: "width 0.6s ease" }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────── SUBSCRIPTION GROWTH BARS ───────────────────────────────────────── */
+function SubGrowthBars() {
+  const maxVal = Math.max(...BAR_DATA);
+  const barH   = 90;
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <svg viewBox="0 0 430 120" style={{ width: "100%", minWidth: 300 }}>
+        {/* Y labels */}
+        {[80, 320].map((v, i) => {
+          const y = barH - (v / maxVal) * barH + 10;
+          return (
+            <text key={i} x={0} y={y} fill="#9a8a70" fontSize={9}>{v}</text>
+          );
+        })}
+        {/* Grid lines */}
+        {[80, 320].map((v, i) => {
+          const y = barH - (v / maxVal) * barH + 10;
+          return (
+            <line key={i} x1={28} y1={y} x2={430} y2={y} stroke="#e8e0d0" strokeWidth={1} strokeDasharray="3 3" />
+          );
+        })}
         {BAR_DATA.map((val, i) => {
-          const bw = 38;
-          const gap = 22;
-          const x = 28 + i * (bw + gap);
-          const h = (val / maxVal) * barH;
-          const y = barH - h + 10;
-          const opacity = 0.6 + (val / maxVal) * 0.4;
+          const bw      = 40;
+          const gap     = 20;
+          const x       = 30 + i * (bw + gap);
+          const bh      = (val / maxVal) * barH;
+          const y       = barH - bh + 10;
           return (
             <g key={i}>
-              <rect x={x} y={y} width={bw} height={h} rx="5" fill="#c8922a" opacity={opacity} />
-              <text x={x + bw / 2} y={100} fontSize="9" fill="#b0a090" textAnchor="middle">
-                {MONTHS[i]}
-              </text>
+              <rect x={x} y={y} width={bw} height={bh} rx={6} fill="#c8922a" opacity={0.75 + (val / maxVal) * 0.25} />
+              <text x={x + bw / 2} y={barH + 22} fill="#9a8a70" fontSize={9} textAnchor="middle">{MONTHS[i]}</text>
             </g>
           );
         })}
@@ -358,178 +287,314 @@ function SubGrowthBars() {
   );
 }
 
-/* ─────────────────────────────────────────
-   DASHBOARD PAGE
-───────────────────────────────────────── */
+/* ───────────────────────────────────────── DASHBOARD PAGE ───────────────────────────────────────── */
 export default function DashboardPage() {
   const [chartPeriod] = useState("Last 7 Months");
+  const [stats,      setStats]      = useState<any>(null);
+  const [plans,      setPlans]      = useState<Plan[]>([]);
+  const [topSalons,  setTopSalons]  = useState<Salon[]>([]);
+  const [loading,    setLoading]    = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res  = await fetch("http://localhost:3001/api/superdashboard/dashboard");
+        const data = await res.json();
+
+        setStats(data.stats);
+
+        // Build plan array for donut
+        const pd = data.planDistribution || {};
+        setPlans(
+          Object.entries(pd)
+            .filter(([, count]) => (count as number) > 0)
+            .map(([label, count]) => ({
+              label,
+              count: count as number,
+              color: PLAN_COLORS[label] || "#888",
+            }))
+        );
+
+        // Build top salons list
+        setTopSalons(
+          (data.topSalons || []).map((s: any, idx: number) => ({
+            rank:    idx + 1,
+            name:    s.name,
+            city:    s.city,
+            revenue: formatINR(s.revenue),
+            trend:   "+0%",
+            up:      true,
+          }))
+        );
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching dashboard:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ color: "#c8922a", padding: 40, textAlign: "center", background: "#f5f0e8", minHeight: "100vh", fontFamily: "system-ui, sans-serif" }}>
+        Loading...
+      </div>
+    );
+  }
+
+  const s = stats || {};
+
+  const STATS: Stat[] = [
+    {
+      label: "Total Salons & Spas",
+      value: s.totalSalonsAndSpas?.toString() || "0",
+      trend: "+14%", up: true,
+      icon: "🏪",
+    },
+    {
+      label: "Active Branches",
+      value: s.totalBranches?.toString() || "0",
+      trend: "+8%", up: true,
+      icon: "📊",
+    },
+    {
+      label: "Total Customers",
+      value: s.totalCustomers?.toLocaleString() || "0",
+      trend: "+22%", up: true,
+      icon: "👥",
+    },
+    {
+      label: "Platform Revenue",
+      value: formatINR(s.totalRevenue || 0),
+      trend: "+18%", up: true, gold: true,
+      icon: "₹",
+    },
+    {
+      label: "Active Subscriptions",
+      value: s.activeSubscriptions?.toString() || "0",
+      trend: "+11%", up: true,
+      icon: "💳",
+    },
+    {
+      label: "Pending Approvals",
+      value: s.pendingApprovals?.toString() || "0",
+      trend: "-30%", up: false,
+      icon: "🕐",
+    },
+    {
+      label: "MRR",
+      value: formatINR(s.mrr || 0),
+      trend: "+16%", up: true,
+      icon: "📈",
+    },
+    {
+      label: "System Uptime",
+      value: "99.8%",
+      trend: "+0.1%", up: true,
+      icon: "✓",
+    },
+  ];
 
   return (
-    <div className="font-['DM_Sans',sans-serif] text-[#1a1208]">
+    <div style={{
+      minHeight: "100vh",
+      background: "#f5f0e8",
+      padding: "36px 32px",
+      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    }}>
 
       {/* Greeting */}
-      <div className="mb-5">
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
+      <div style={{ marginBottom: 10 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1a1208", margin: 0, letterSpacing: "-0.5px" }}>
           Good morning, Admin ✦
         </h1>
-        <p className="text-[13.5px] text-[#7a6a55] mt-0.5">
-          Here&apos;s what&apos;s happening across your platform today.
+        <p style={{ color: "#7a6a50", margin: "6px 0 0", fontSize: 14 }}>
+          Here's what's happening across your platform today.
         </p>
       </div>
 
       {/* Alert Banner */}
-      <div className="flex items-center gap-2 bg-[#fdf6ec] border border-[#f0d9b0] rounded-[10px] px-4 py-[11px] text-[13px] mb-5">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c8922a" strokeWidth="2">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 8v4M12 16h.01" />
-        </svg>
-        <span>
-          <span className="text-[#c8922a] font-semibold">7 salons</span> are pending approval
+      <div style={{
+        background: "#fdf8ee",
+        border: "1px solid #e8d89a",
+        borderRadius: 12,
+        padding: "14px 20px",
+        margin: "20px 0",
+        fontSize: 13,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <span style={{ color: "#5a4a30" }}>
+          <span style={{ color: "#c8922a" }}>⚠</span>
+          {"  "}
+          <strong style={{ color: "#c8922a" }}>{s.pendingApprovals || 0} salons</strong>
+          {" are pending approval · "}
+          <strong style={{ color: "#c8922a" }}>{s.pendingAppointments || 0} appointments</strong>
+          {" are pending"}
         </span>
-        <span className="text-[#e8e0d4] mx-1">·</span>
-        <span>
-          <span className="text-[#c8922a] font-semibold">12 subscriptions</span> expire this week
-        </span>
-        <span className="ml-auto text-[#c8922a] font-medium cursor-pointer whitespace-nowrap">
+        <span style={{ color: "#c8922a", fontWeight: 600, cursor: "pointer", fontSize: 13 }}>
           Review Now →
         </span>
       </div>
 
       {/* Stats Grid — 2 rows × 4 cols */}
-      <div className="grid grid-cols-4 gap-3.5 mb-5">
-        {STATS.map((s, i) => (
-          <div
-            key={s.label}
-            style={{ animation: `fadeUp 0.35s ease ${i * 0.05}s both` }}
-          >
-            <StatCard stat={s} />
-          </div>
-        ))}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
+        {STATS.map((st, i) => <StatCard key={i} stat={st} />)}
       </div>
 
       {/* Revenue Chart + Plan Distribution */}
-      <div className="grid gap-3.5 mb-3.5" style={{ gridTemplateColumns: "1fr 320px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16, marginBottom: 20 }}>
+
         {/* Revenue Chart */}
         <Card>
-          <div className="flex justify-between items-start mb-3.5">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <div>
-              <p className="text-[15px] font-semibold">Revenue Overview</p>
-              <p className="text-xs text-[#7a6a55] mt-0.5">Monthly platform revenue &amp; subscriptions</p>
+              <div style={{ color: "#1a1208", fontWeight: 700, fontSize: 17 }}>Revenue Overview</div>
+              <div style={{ color: "#9a8a70", fontSize: 12, marginTop: 2 }}>Monthly platform revenue & subscriptions</div>
             </div>
-            <button className="bg-[#f7f4ef] border border-[#e8e0d4] rounded-full px-3 py-1 text-xs text-[#7a6a55] cursor-pointer">
+            <span style={{
+              background: "#f0ebe0",
+              border: "1px solid #e0d8c8",
+              borderRadius: 20,
+              padding: "4px 14px",
+              color: "#7a6a50",
+              fontSize: 12,
+              fontWeight: 500,
+            }}>
               {chartPeriod}
-            </button>
+            </span>
           </div>
           <RevenueChart />
         </Card>
 
         {/* Plan Distribution */}
         <Card>
-          <p className="text-[15px] font-semibold">Plan Distribution</p>
-          <p className="text-xs text-[#7a6a55] mt-0.5 mb-3.5">Active subscription tiers</p>
-          <div className="flex justify-center">
-            <DonutChart />
+          <div style={{ color: "#1a1208", fontWeight: 700, fontSize: 17, marginBottom: 2 }}>Plan Distribution</div>
+          <div style={{ color: "#9a8a70", fontSize: 12, marginBottom: 16 }}>Active subscription tiers</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+            <DonutChart plans={plans} />
           </div>
-          <div className="flex flex-col gap-2.5 mt-3.5">
-            {PLANS.map((p) => (
-              <div key={p.label} className="flex items-center gap-2 text-[13px]">
-                <span
-                  className="w-2.5 h-2.5 rounded-[3px] flex-shrink-0"
-                  style={{ background: p.color }}
-                />
-                <span className="text-[#7a6a55]">{p.label}</span>
-                <span className="ml-auto font-medium text-[#1a1208]">{p.count}</span>
-              </div>
-            ))}
-          </div>
+          {plans.map((p) => (
+            <div key={p.label} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, alignItems: "center" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: 8, color: "#7a6a50", fontSize: 13 }}>
+                <span style={{ width: 10, height: 10, borderRadius: "50%", background: p.color, display: "inline-block", flexShrink: 0 }} />
+                {p.label}
+              </span>
+              <span style={{ color: "#1a1208", fontWeight: 700, fontSize: 14 }}>{p.count}</span>
+            </div>
+          ))}
         </Card>
       </div>
 
       {/* Top Performing Salons + System Health + Subscription Growth */}
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1fr 320px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 }}>
+
         {/* Top Performing Salons */}
         <Card>
-          <div className="flex justify-between items-center mb-1">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <div>
-              <p className="text-[15px] font-semibold">Top Performing Salons</p>
-              <p className="text-xs text-[#7a6a55] mt-0.5">By revenue this month</p>
+              <div style={{ color: "#1a1208", fontWeight: 700, fontSize: 17 }}>Top Performing Salons</div>
+              <div style={{ color: "#9a8a70", fontSize: 12, marginTop: 2 }}>By revenue this month</div>
             </div>
-            <span className="text-[13px] text-[#c8922a] font-medium cursor-pointer">
-              View All →
-            </span>
+            <span style={{ color: "#c8922a", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>View All →</span>
           </div>
 
-          <div className="flex flex-col mt-3">
-            {TOP_SALONS.map((salon, i) => (
-              <div
-                key={salon.rank}
-                className={`flex items-center gap-3 py-3
-                  ${i < TOP_SALONS.length - 1 ? "border-b border-[#f0ebe3]" : ""}`}
-              >
-                {/* Rank badge */}
-                <div
-                  className={`w-[30px] h-[30px] rounded-full flex items-center justify-center
-                    text-[11px] font-bold flex-shrink-0
-                    ${salon.rank === 1 ? "bg-[#c8922a] text-white" : "bg-[#f7f4ef] text-[#7a6a55]"}`}
-                >
-                  #{salon.rank}
-                </div>
+          {topSalons.map((salon) => (
+            <div key={salon.rank} style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              padding: "12px 0",
+              borderBottom: "1px solid #f0ebe0",
+            }}>
+              {/* Rank badge */}
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: salon.rank === 1 ? "#c8922a" : "#f0ebe0",
+                color: salon.rank === 1 ? "#ffffff" : "#7a6a50",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                fontSize: 12,
+                flexShrink: 0,
+              }}>
+                #{salon.rank}
+              </div>
 
-                {/* Name + city */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13.5px] font-medium text-[#1a1208]">{salon.name}</p>
-                  <p className="text-[11.5px] text-[#7a6a55] mt-px">{salon.city}</p>
-                </div>
+              {/* Avatar circle */}
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                background: "#f0ebe0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
+                flexShrink: 0,
+              }}>
+                ✂
+              </div>
 
-                {/* Revenue + trend */}
-                <div className="text-right flex-shrink-0">
-                  <p className="text-[14px] font-semibold text-[#1a1208]">{salon.revenue}</p>
-                  <p className={`text-[11.5px] font-medium mt-px ${salon.up ? "text-[#2d7a4f]" : "text-[#c0392b]"}`}>
-                    {salon.trend}
-                  </p>
+              {/* Name + city */}
+              <div style={{ flex: 1 }}>
+                <div style={{ color: "#1a1208", fontWeight: 600, fontSize: 14 }}>{salon.name}</div>
+                <div style={{ color: "#9a8a70", fontSize: 12, marginTop: 1 }}>{salon.city}</div>
+              </div>
+
+              {/* Revenue + trend */}
+              <div style={{ textAlign: "right" }}>
+                <div style={{ color: "#1a1208", fontWeight: 700, fontSize: 14 }}>{salon.revenue}</div>
+                <div style={{ color: salon.up ? "#22c55e" : "#ef4444", fontSize: 12, marginTop: 1, fontWeight: 600 }}>
+                  {salon.trend}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </Card>
 
         {/* Right column */}
-        <div className="flex flex-col gap-3.5">
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
           {/* System Health */}
           <Card>
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-[15px] font-semibold">System Health</p>
-              <span className="flex items-center gap-1.5 bg-[#eaf7f0] text-[#27ae60] text-[11.5px] font-medium px-2.5 py-0.5 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#27ae60] inline-block" />
-                Operational
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div style={{ color: "#1a1208", fontWeight: 700, fontSize: 17 }}>System Health</div>
+              <span style={{
+                background: "#f0fdf4",
+                color: "#16a34a",
+                border: "1px solid #bbf7d0",
+                borderRadius: 20,
+                padding: "3px 10px",
+                fontSize: 12,
+                fontWeight: 600,
+              }}>
+                ● Operational
               </span>
             </div>
-
-            <div className="grid grid-cols-2 gap-x-5 gap-y-3.5">
-              {HEALTH.map((h) => (
-                <div key={h.label}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-xs text-[#7a6a55]">{h.label}</span>
-                    <span className="text-xs font-semibold" style={{ color: h.color }}>
-                      {h.pct}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-[#f0ebe3] overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${h.pct}%`, background: h.color }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <SystemHealthGrid />
           </Card>
 
           {/* Subscription Growth */}
           <Card>
-            <div className="flex justify-between items-center mb-2.5">
-              <p className="text-[15px] font-semibold">Subscription Growth</p>
-              <span className="bg-[#fdf6ec] border border-[#f0d9b0] text-[#c8922a] text-[11.5px] font-semibold px-2.5 py-0.5 rounded-full">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div style={{ color: "#1a1208", fontWeight: 700, fontSize: 17 }}>Subscription Growth</div>
+              <span style={{
+                background: "#f0ebe0",
+                border: "1px solid #e0d8c8",
+                borderRadius: 20,
+                padding: "3px 10px",
+                color: "#c8922a",
+                fontSize: 12,
+                fontWeight: 600,
+              }}>
                 +19% MoM
               </span>
             </div>
@@ -541,8 +606,8 @@ export default function DashboardPage() {
       {/* fadeUp keyframes */}
       <style>{`
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0);    }
         }
       `}</style>
     </div>
