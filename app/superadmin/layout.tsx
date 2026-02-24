@@ -218,7 +218,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/superadmin/platform/subscriptions":  "Subscriptions",
   "/superadmin/platform/users":          "Users",
   "/superadmin/platform/regions":        "Regions & Franchise",
-  "/superadmin/management/commission":   "Commission",
+  "/superadmin/management/commission":   "Commission & Marketplace",
   "/superadmin/management/automation":   "Automation",
   "/superadmin/management/ai-insights":  "AI Insights",
   "/superadmin/management/reports":      "Reports",
@@ -448,7 +448,7 @@ export default function SuperAdminLayout({
   const pageTitle = PAGE_TITLES[pathname] ?? "Global Dashboard";
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f7f4ef]">
+    <div className="flex min-h-screen bg-[#f7f4ef]">
       {/* SIDEBAR */}
       <Sidebar
         collapsed={collapsed}
@@ -461,9 +461,11 @@ export default function SuperAdminLayout({
         <Topbar pageTitle={pageTitle} />
 
         {/* PAGE CONTENT — injected by page.tsx */}
-        <main className="flex-1 overflow-y-auto p-7 bg-[#f7f4ef]">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto bg-[#f7f4ef]">
+  <div className="w-full px-6 sm:px-8 lg:px-10 py-6">
+    {children}
+  </div>
+</main>
       </div>
     </div>
   );
