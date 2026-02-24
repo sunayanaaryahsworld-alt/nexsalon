@@ -30,7 +30,117 @@ interface Plan {
   color: string;
 }
 
-/* ───────────────────────────────────────── SYSTEM HEALTH DATA ───────────────────────────────────────── */
+/* ─────────────────────────────────────────
+   STAT CARDS DATA
+───────────────────────────────────────── */
+const STATS: Stat[] = [
+  {
+    label: "Total Salons & Spas",
+    value: "312",
+    trend: "+14%",
+    up: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M3 7h18v13H3z" />
+        <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+      </svg>
+    ),
+  },
+  {
+    label: "Active Branches",
+    value: "847",
+    trend: "+8%",
+    up: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
+    ),
+  },
+  {
+    label: "Total Customers",
+    value: "1.24M",
+    trend: "+22%",
+    up: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  },
+  {
+    label: "Platform Revenue",
+    value: "₹84.2L",
+    trend: "+18%",
+    up: true,
+    gold: true,
+    icon: <span className="text-sm font-bold">₹</span>
+  },
+  {
+    label: "Active Subscriptions",
+    value: "259",
+    trend: "+11%",
+    up: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="1" y="4" width="22" height="16" rx="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </svg>
+    ),
+  },
+  {
+    label: "Pending Approvals",
+    value: "7",
+    trend: "-30%",
+    up: false,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+  },
+  {
+    label: "MRR",
+    value: "₹18.4L",
+    trend: "+16%",
+    up: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
+      </svg>
+    ),
+  },
+  {
+    label: "System Uptime",
+    value: "99.8%",
+    trend: "+0.1%",
+    up: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    ),
+  },
+];
+
+/* ─────────────────────────────────────────
+   TOP SALONS DATA
+───────────────────────────────────────── */
+const TOP_SALONS: Salon[] = [
+  { rank: 1, name: "Luxe Beauty Studio", city: "Mumbai",    revenue: "₹2.4L", trend: "+18%", up: true  },
+  { rank: 2, name: "Velvet Touch Spa",   city: "Bangalore", revenue: "₹1.9L", trend: "+12%", up: true  },
+  { rank: 3, name: "Golden Hour Salon",  city: "Delhi",     revenue: "₹1.7L", trend: "+8%",  up: true  },
+  { rank: 4, name: "Aura Wellness",      city: "Pune",      revenue: "₹1.4L", trend: "-3%",  up: false },
+  { rank: 5, name: "The Refinery",       city: "Chennai",   revenue: "₹1.2L", trend: "+22%", up: true  },
+];
+
+/* ─────────────────────────────────────────
+   SYSTEM HEALTH DATA
+───────────────────────────────────────── */
 const HEALTH: HealthItem[] = [
   { label: "API",     pct: 99.9, color: "#22c55e" },
   { label: "DB",      pct: 99.7, color: "#22c55e" },
