@@ -136,6 +136,17 @@ const NAV_SECTIONS: NavSection[] = [
           </svg>
         ),
       },
+            {
+        id: "blogs",
+        label: "Blogs",
+        href: "/superadmin/management/form",
+        icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <rect x="3" y="3" width="18" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+        ),
+      },
       {
         id: "support",
         label: "Support",
