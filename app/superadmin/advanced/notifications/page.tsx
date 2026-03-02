@@ -1,162 +1,111 @@
+
 "use client";
 
-import { Send, Globe, Image } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const ANNOUNCEMENTS = [
-  {
-    title: "Platform Maintenance",
-    meta: "All Salons · System · Feb 15",
-    status: "sent",
-  },
-  {
-    title: "New Feature: WhatsApp Booking",
-    meta: "Pro & Enterprise · Feature · Feb 10",
-    status: "sent",
-  },
-  {
-    title: "Subscription Price Update",
-    meta: "All Salons · Billing · Scheduled Feb 28",
-    status: "scheduled",
-  },
-];
+function formatDate(timestamp: number) {
+  const date = new Date(timestamp);
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function timeAgo(timestamp: number) {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+  if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  return "Just now";
+}
 
 export default function NotificationsPage() {
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  const fetchNotifications = async () => {
+    const res = await fetch(
+      "http://localhost:3001/api/superadmin/notifications"
+    );
+    const data = await res.json();
+
+    // ❌ Remove appointments
+    const filtered = (data.notifications || []).filter(
+      (item: any) => item.type !== "NEW_APPOINTMENT"
+    );
+
+    setNotifications(filtered);
+    setLoading(false);
+  };
+
+  fetchNotifications();
+}, []);
+
+  const clearNotification = (id: string) => {
+    setNotifications((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
+  };
+
+  if (loading) return <p>Loading...</p>;
+
   return (
     <div className="w-full">
+      <h1 className="text-3xl font-serif font-bold mb-8">
+        Recent Activity (Last 3 Days)
+      </h1>
 
-      {/* HEADER */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
-        <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#2d241a]">
-            Notifications & CMS
-          </h1>
-          <p className="text-sm text-[#7a6a55] mt-1">
-            Send announcements and manage platform content
-          </p>
-        </div>
-
-        <button className="w-full sm:w-auto bg-[#c8922a] hover:bg-[#b07d20] text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-sm transition">
-          + New Announcement
-        </button>
-      </div>
-
-      {/* MAIN GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-
-        {/* LEFT — COMPOSE */}
-        <div className="bg-[#f9f7f4] border border-[#eee7dc] rounded-2xl p-6 sm:p-8 shadow-sm">
-
-          <h2 className="text-xl font-serif font-bold mb-6">
-            Compose Notification
-          </h2>
-
-          {/* Title */}
-          <div className="mb-5">
-            <label className="text-sm text-[#7a6a55]">Title</label>
-            <input
-              type="text"
-              placeholder="Announcement title..."
-              className="mt-2 w-full bg-white border border-[#e8e0d4] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c8922a]/30"
-            />
-          </div>
-
-          {/* Audience */}
-          <div className="mb-5">
-            <label className="text-sm text-[#7a6a55]">
-              Target Audience
-            </label>
-            <select
-              className="mt-2 w-full bg-white border border-[#e8e0d4] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c8922a]/30"
+      {notifications.length === 0 ? (
+        <p>No recent activity</p>
+      ) : (
+        <div className="space-y-5">
+          {notifications.map((item) => (
+            <div
+              key={item.id}
+              className="p-6 bg-white border border-[#eee7dc] rounded-xl shadow-sm"
             >
-              <option>All Salons</option>
-              <option>Pro Plan</option>
-              <option>Enterprise</option>
-            </select>
-          </div>
-
-          {/* Message */}
-          <div className="mb-6">
-            <label className="text-sm text-[#7a6a55]">
-              Message
-            </label>
-            <textarea
-              rows={5}
-              placeholder="Write your message..."
-              className="mt-2 w-full bg-white border border-[#e8e0d4] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#c8922a]/30"
-            />
-          </div>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="flex items-center justify-center gap-2 bg-[#c8922a] hover:bg-[#b07d20] text-white px-6 py-3 rounded-full text-sm font-medium shadow-sm transition w-full sm:w-auto">
-              <Send size={16} />
-              Send Now
-            </button>
-
-            <button className="px-6 py-3 rounded-full text-sm border border-[#e8e0d4] bg-white hover:bg-[#f3eee6] transition w-full sm:w-auto">
-              Schedule
-            </button>
-          </div>
-        </div>
-
-        {/* RIGHT — RECENT */}
-        <div className="bg-[#f9f7f4] border border-[#eee7dc] rounded-2xl p-6 sm:p-8 shadow-sm">
-
-          <h2 className="text-xl font-serif font-bold mb-6">
-            Recent Announcements
-          </h2>
-
-          <div className="space-y-4">
-
-            {ANNOUNCEMENTS.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white border border-[#eee7dc] rounded-xl p-4 flex justify-between items-start"
-              >
+              <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-medium text-[#2d241a]">
+                  <p className="text-lg font-semibold">
                     {item.title}
                   </p>
-                  <p className="text-xs text-[#7a6a55] mt-1">
-                    {item.meta}
+
+                  <p className="text-sm text-gray-600 mt-1">
+                    {item.message}
                   </p>
+
+                  {/* Type Badge */}
+                  <span className="inline-block mt-3 px-3 py-1 text-xs bg-[#fdf3e0] text-[#c8922a] rounded-full">
+                    {item.type.replace("_", " ")}
+                  </span>
+
+                  {/* Date */}
+                  <div className="mt-3 text-xs text-gray-500">
+                    <p>{formatDate(item.createdAt)}</p>
+                    <p>{timeAgo(item.createdAt)}</p>
+                  </div>
                 </div>
 
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    item.status === "sent"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-yellow-100 text-yellow-600"
-                  }`}
+                <button
+                  onClick={() => clearNotification(item.id)}
+                  className="text-red-500 text-sm"
                 >
-                  {item.status}
-                </span>
+                  Clear
+                </button>
               </div>
-            ))}
-
-          </div>
-
-          {/* Divider */}
-          <div className="my-6 border-t border-[#eee7dc]" />
-
-          {/* CMS Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            <button className="flex items-center justify-center gap-2 bg-white border border-[#e8e0d4] rounded-xl px-4 py-3 hover:bg-[#f3eee6] transition text-sm">
-              <Globe size={16} />
-              Landing Page CMS
-            </button>
-
-            <button className="flex items-center justify-center gap-2 bg-white border border-[#e8e0d4] rounded-xl px-4 py-3 hover:bg-[#f3eee6] transition text-sm">
-              <Image size={16} />
-              Banner Manager
-            </button>
-
-          </div>
-
+            </div>
+          ))}
         </div>
-
-      </div>
+      )}
     </div>
   );
 }

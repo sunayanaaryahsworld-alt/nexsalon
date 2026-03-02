@@ -28,9 +28,15 @@ import appointmentRoutes from "./routes/appoinmentRoutes.js";
 import calendarSettingsRoutes from "./routes/calendarSettings.routes.js";
 import businessDetails from "./routes/businessDetails.routes.js";
 import contactRoutes from './routes/contactRoutes.js';
+//superadmin
 import SuperAdmindashboardRoutes from "./routes/superadmin-dashboardRoutes.js";
 import  salonRoutes from "./routes/salonRoutes.js";
 import userManagementRoutes from "./routes/userManagementRoutes.js";
+import complianceRoutes from "./routes/complianceRoutes.js";
+import systemRoutes from "./routes/system.js";
+import founderRoutes from "./routes/founder.js";
+import whiteLabelRoutes from "./routes/whiteLabelRoutes.js";
+import NotificationRoutes from "./routes/NotificationRoutes.js";
 
 dotenv.config();
 
@@ -127,10 +133,15 @@ app.use("/api/marketing", marketingRoutes);
 app.use("/api/activity-logs", activityLogsRoutes);
 app.use("/api/admin", calendarSettingsRoutes);
 app.use("/api/admin", businessDetails);
+//superadmin
 app.use("/api/superdashboard", SuperAdmindashboardRoutes);
 app.use( "/api/salon", salonRoutes);
 app.use("/api/superdashboard", userManagementRoutes);
-
+app.use("/api/compliance", complianceRoutes);
+app.use("/api/system", systemRoutes);
+app.use("/api/founder", founderRoutes);
+app.use("/api/white-label", whiteLabelRoutes);
+app.use("/api/superadmin", NotificationRoutes);
 
 /* -------------------- SERVER -------------------- */
 app.listen(env.PORT, () => {

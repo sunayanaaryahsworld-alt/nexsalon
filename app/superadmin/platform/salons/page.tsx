@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 type Status = "Active" | "Pending" | "Suspended";
 type Plan = "Enterprise" | "Pro" | "Starter" | "Trial";
 type Filter = "All" | Status;
+type BusinessType = "Salon" | "Spa";
 
 interface Salon {
   id: number;
@@ -20,6 +21,7 @@ interface Salon {
   revenue: string;
   rating: number | null;
   status: Status;
+  type: BusinessType;   // 👈 ADD THIS
 }
 
 const ITEMS_PER_PAGE = 8;
@@ -175,6 +177,7 @@ export default function SalonsPage() {
   const [salons,    setSalons]    = useState<Salon[]>([]);
   const [viewSalon, setViewSalon] = useState<Salon | null>(null);
   const [loading,   setLoading]   = useState(true);
+  const [typeFilter, setTypeFilter] = useState<BusinessType | null>(null);
 
   /* ── Fetch from API ── */
   useEffect(() => {
@@ -202,6 +205,7 @@ export default function SalonsPage() {
                         : "₹0",
           rating:     item.rating != null ? Number(item.rating) : null,
           status:     normalizeStatus(item.status ?? item.subscriptionStatus ?? ""),
+          type: item.type?.toLowerCase() === "spa" ? "Spa" : "Salon", // 👈 NEW
         }));
 
         setSalons(mapped);
@@ -223,12 +227,16 @@ export default function SalonsPage() {
 
   /* ── Filtered data ── */
   const filtered = salons.filter((s) => {
-    const matchSearch =
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.city.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = filter === "All" || s.status === filter;
-    return matchSearch && matchFilter;
-  });
+  const matchSearch =
+    s.name.toLowerCase().includes(search.toLowerCase()) ||
+    s.city.toLowerCase().includes(search.toLowerCase());
+
+  const matchStatus = filter === "All" || s.status === filter;
+
+  const matchType = !typeFilter || s.type === typeFilter;
+
+  return matchSearch && matchStatus && matchType;
+});
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated  = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -315,43 +323,65 @@ export default function SalonsPage() {
         ))}
       </div>
 
-      {/* ── Search + Filters ── */}
-      <div className="flex items-center gap-3 mb-6">
-        {/* Search */}
-        <div className="flex items-center gap-2 bg-white border border-[#e8e0d4] rounded-xl px-4 py-2.5 w-72 text-sm text-[#7a6a55]">
-          <SearchIcon />
-          <input
-            type="text"
-            placeholder="Search salons or cities..."
-            value={search}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="bg-transparent outline-none flex-1 text-[#1a1208] placeholder:text-[#7a6a55]"
-          />
-        </div>
+{/* ── Search + Filters ── */}
+<div className="flex flex-wrap items-center gap-4 mb-6">
 
-        {/* Filter tabs */}
-        <div className="flex items-center gap-2">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              onClick={() => handleFilterChange(f)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors
-                ${filter === f
-                  ? "bg-[#c8922a] text-white border-[#c8922a]"
-                  : "bg-white text-[#7a6a55] border-[#e8e0d4] hover:border-[#c8922a] hover:text-[#c8922a]"
-                }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-      </div>
+  {/* Search */}
+  <div className="flex items-center gap-2 bg-white border border-[#e8e0d4] rounded-xl px-4 py-2.5 w-72 text-sm text-[#7a6a55]">
+    <SearchIcon />
+    <input
+      type="text"
+      placeholder="Search salons or cities..."
+      value={search}
+      onChange={(e) => handleSearch(e.target.value)}
+      className="bg-transparent outline-none flex-1 text-[#1a1208] placeholder:text-[#7a6a55]"
+    />
+  </div>
+
+  {/* Status Filter */}
+  <div className="flex items-center gap-2">
+    {FILTERS.map((f) => (
+      <button
+        key={f}
+        onClick={() => handleFilterChange(f)}
+        className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors
+          ${filter === f
+            ? "bg-[#c8922a] text-white border-[#c8922a]"
+            : "bg-white text-[#7a6a55] border-[#e8e0d4] hover:border-[#c8922a] hover:text-[#c8922a]"
+          }`}
+      >
+        {f}
+      </button>
+    ))}
+  </div>
+
+  {/* Business Type Filter (Same Theme Color) */}
+  <div className="flex items-center gap-2">
+    {["Salon", "Spa"].map((t) => (
+  <button
+    key={t}
+    onClick={() => {
+      setTypeFilter(typeFilter === t ? null : (t as BusinessType));
+      setPage(1);
+    }}
+    className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors
+      ${typeFilter === t
+        ? "bg-[#c8922a] text-white border-[#c8922a]"
+        : "bg-white text-[#7a6a55] border-[#e8e0d4] hover:border-[#c8922a] hover:text-[#c8922a]"
+      }`}
+  >
+    {t}
+  </button>
+))}
+  </div>
+
+</div>
 
       {/* ── Table ── */}
       <div className="bg-white border border-[#e8e0d4] rounded-2xl overflow-hidden">
         {/* Table header */}
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr] px-6 py-3 border-b border-[#e8e0d4]">
-          {["SALON", "PLAN", "BRANCHES", "REVENUE", "RATING", "STATUS", "ACTIONS"].map((h) => (
+        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] px-6 py-3 border-b border-[#e8e0d4]">
+          {["SALON","TYPE", "PLAN", "BRANCHES", "REVENUE", "RATING", "STATUS", "ACTIONS"].map((h) => (
             <p key={h} className="text-[11px] font-semibold tracking-wider text-[#7a6a55] uppercase">
               {h}
             </p>
@@ -367,7 +397,7 @@ export default function SalonsPage() {
           paginated.map((salon, i) => (
             <div
               key={salon.id}
-              className={`grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr] px-6 py-4 items-center
+              className={`grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] px-6 py-4 items-center
                 ${i < paginated.length - 1 ? "border-b border-[#f0ebe3]" : ""}
                 hover:bg-[#fdf9f4] transition-colors`}
             >
@@ -381,7 +411,16 @@ export default function SalonsPage() {
                   <p className="text-[11.5px] text-[#7a6a55]">{salon.owner} · {salon.city}</p>
                 </div>
               </div>
-
+              {/* Type */}
+              <div>
+                <span className={`text-xs font-medium px-3 py-1 rounded-full border ${
+                  salon.type === "Spa"
+                    ? "bg-[#eaf0ff] text-[#3b5bdb] border-[#c7d2fe]"
+                    : "bg-[#f0ebe3] text-[#7a6a55] border-[#e8e0d4]"
+                }`}>
+                  {salon.type}
+                </span>
+              </div>
               {/* Plan */}
               <div>
                 <span className={`text-xs font-medium px-3 py-1 rounded-full border ${planColors[salon.plan]}`}>
