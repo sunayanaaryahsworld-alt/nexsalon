@@ -42,6 +42,14 @@ function cityFromAddress(address = "") {
 ───────────────────────────────────────── */
 export const getAllSalons = async (req, res) => {
   try {
+
+    const { page = 1, limit = 10 } = req.query;
+
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    const startIndex = (pageNumber - 1) * limitNumber;
+    const endIndex = startIndex + limitNumber;
     const rootSnap = await get(ref(db, "salonandspa"));
     if (!rootSnap.exists()) {
       return res.status(404).json({ message: "No data found" });
@@ -59,12 +67,20 @@ export const getAllSalons = async (req, res) => {
       ownerMap[uid] = admin;
     });
 
-    /* ── Count branches per owner (salons + spas) ── */
-    const branchCount = {};
-    [...Object.values(salons), ...Object.values(spas)].forEach((place) => {
-      const oid = place.ownerId || "";
-      if (oid) branchCount[oid] = (branchCount[oid] || 0) + 1;
-    });
+   /* ── Count branches + active branches per owner ── */
+const branchCount = {};
+const activeBranchCount = {};
+
+[...Object.values(salons), ...Object.values(spas)].forEach((place) => {
+  const oid = place.ownerId || "";
+  if (!oid) return;
+
+  branchCount[oid] = (branchCount[oid] || 0) + 1;
+
+  if (place.status === "active") {
+    activeBranchCount[oid] = (activeBranchCount[oid] || 0) + 1;
+  }
+});
 
     /* ── Revenue per salon from appointments ── */
     const salonRevenue = {};
@@ -94,7 +110,8 @@ export const getAllSalons = async (req, res) => {
         owner:    owner.name || owner.businessName || "Unknown",
         city:     cityFromAddress(place.address || ""),
         plan,
-        branches: branchCount[place.ownerId] || 1,
+    branches: branchCount[place.ownerId] || 0,
+activeBranches: activeBranchCount[place.ownerId] || 0,
         revenue:  rev,                        // raw number; frontend formats it
         rating:   place.rating ? Number(place.rating) : null,
         status,
@@ -112,8 +129,13 @@ export const getAllSalons = async (req, res) => {
       pending:   result.filter((s) => s.status === "Pending").length,
       suspended: result.filter((s) => s.status === "Suspended").length,
     };
-
-    return res.status(200).json({ salons: result, summary });
+return res.status(200).json({
+  salons: paginatedSalons,
+  summary,
+  total: result.length,
+  page: pageNumber,
+  totalPages: Math.ceil(result.length / limitNumber)
+});
   } catch (error) {
     console.error("SALONS LIST ERROR:", error);
     return res.status(500).json({ message: "Failed to load salons" });

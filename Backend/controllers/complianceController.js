@@ -50,7 +50,14 @@ const toCSV = (rows) => {
 // ─── GET AUDIT LOGS ───────────────────────────────────────────────────────────
 export const getAuditLogs = async (req, res) => {
   try {
-    const { businessId, days = 30, limit = 50 } = req.query;
+   const { businessId, days = 30, page = 1, limit = 10 } = req.query;
+   
+   const pageNumber = Number(page);
+const limitNumber = Number(limit);
+
+const startIndex = (pageNumber - 1) * limitNumber;
+const endIndex = startIndex + limitNumber;
+
     const cutoff = Date.now() - Number(days) * 24 * 60 * 60 * 1000;
     let allLogs = [];
 
@@ -87,14 +94,16 @@ export const getAuditLogs = async (req, res) => {
       }
 
       allLogs.sort((a, b) => b.createdAt - a.createdAt);
-      allLogs = allLogs.slice(0, Number(limit));
-    }
+      const paginatedLogs = allLogs.slice(startIndex, endIndex);
 
-    return res.status(200).json({
-      success: true,
-      total: allLogs.length,
-      data: allLogs,
-    });
+   return res.status(200).json({
+  success: true,
+  total: allLogs.length,
+  page: pageNumber,
+  totalPages: Math.ceil(allLogs.length / limitNumber),
+  data: paginatedLogs,
+});
+    }
   } catch (error) {
     console.error("getAuditLogs error:", error);
     return res.status(500).json({ success: false, message: error.message });

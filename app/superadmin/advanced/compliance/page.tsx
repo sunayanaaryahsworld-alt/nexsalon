@@ -151,23 +151,33 @@ export default function ComplianceAuditPage() {
   const [exportSection, setExportSection] = useState("all");
   const [error, setError]       = useState(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
+const logsPerPage = 10;
 
   const fetchLogs = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API_BASE}/logs?days=${days}&limit=100`, {
-        headers: { 'Accept': 'application/json' }
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.message);
-      setLogs(json.data || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [days]);
+  setLoading(true);
+  setError(null);
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/logs?days=${days}&page=${currentPage}&limit=${logsPerPage}`,
+      { headers: { Accept: "application/json" } }
+    );
+
+    const json = await res.json();
+
+    if (!json.success) throw new Error(json.message);
+
+    setLogs(json.data || []);
+    setTotalPages(json.totalPages || 1);
+
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}, [days, currentPage]);
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -182,7 +192,7 @@ export default function ComplianceAuditPage() {
   useEffect(() => {
     fetchLogs();
     fetchSummary();
-  }, [fetchLogs, fetchSummary]);
+ }, [fetchLogs, fetchSummary, currentPage]);
 
   const handleExport = async () => {
     setExporting(true);
@@ -353,7 +363,10 @@ export default function ComplianceAuditPage() {
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <select
               value={days}
-              onChange={(e) => setDays(e.target.value)}
+              onChange={(e) => {
+  setDays(e.target.value);
+  setCurrentPage(1);
+}}
               style={{
                 padding: "7px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb",
                 fontSize: 13, color: "#374151", background: "#fff", cursor: "pointer", outline: "none",
@@ -367,7 +380,10 @@ export default function ComplianceAuditPage() {
 
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              onChange={(e) => {
+  setTypeFilter(e.target.value);
+  setCurrentPage(1);
+}}
               style={{
                 padding: "7px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb",
                 fontSize: 13, color: "#374151", background: "#fff", cursor: "pointer", outline: "none",
@@ -401,6 +417,49 @@ export default function ComplianceAuditPage() {
             {filteredLogs.map((log) => (
               <LogRow key={log.id} log={log} />
             ))}
+            <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "16px 24px",
+    borderTop: "1px solid #f3f4f6"
+  }}
+>
+  <button
+    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+    disabled={currentPage === 1}
+    style={{
+      padding: "6px 16px",
+      borderRadius: 6,
+      border: "1px solid #e5e7eb",
+      cursor: "pointer",
+      opacity: currentPage === 1 ? 0.4 : 1
+    }}
+  >
+    Previous
+  </button>
+
+  <span style={{ fontSize: 13, color: "#6b7280" }}>
+    Page {currentPage} of {totalPages}
+  </span>
+
+  <button
+    onClick={() =>
+      setCurrentPage((p) => Math.min(p + 1, totalPages))
+    }
+    disabled={currentPage === totalPages}
+    style={{
+      padding: "6px 16px",
+      borderRadius: 6,
+      border: "1px solid #e5e7eb",
+      cursor: "pointer",
+      opacity: currentPage === totalPages ? 0.4 : 1
+    }}
+  >
+    Next
+  </button>
+</div>
           </div>
         )}
       </div>
