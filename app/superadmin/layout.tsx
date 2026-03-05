@@ -103,28 +103,7 @@ const NAV_SECTIONS: NavSection[] = [
           </svg>
         ),
       },
-      {
-        id: "automation",
-        label: "Automation",
-        href: "/superadmin/management/automation",
-        icon: (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-        ),
-      },
-      {
-        id: "ai",
-        label: "AI Insights",
-        href: "/superadmin/management/ai-insights",
-        icon: (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 8v4M12 16h.01" />
-          </svg>
-        ),
-      },
+  
       {
         id: "reports",
         label: "Reports",
@@ -147,16 +126,7 @@ const NAV_SECTIONS: NavSection[] = [
           </svg>
         ),
       },
-      {
-        id: "support",
-        label: "Support",
-        href: "/superadmin/management/support",
-        icon: (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        ),
-      },
+      
     ],
   },
   {
@@ -264,37 +234,41 @@ function Sidebar({
         ${collapsed ? "w-[60px] min-w-[60px]" : "w-[220px] min-w-[220px]"}
       `}
     >
-      {/* ── Logo ── */}
-      <div className="flex items-center gap-2.5 px-4 py-[18px] border-b border-[#2e2010] overflow-hidden flex-shrink-0">
-        <div
-          className="w-[34px] h-[34px] rounded-lg bg-[#c8922a] flex-shrink-0
-                     flex items-center justify-center text-white font-bold text-base"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          n
-        </div>
+    {/* ── Logo ── */}
+<div className="flex items-center gap-3 px-4 py-[18px] border-b border-[#2e2010] overflow-hidden flex-shrink-0">
 
-        {!collapsed && (
-          <span
-            className="text-[18px] font-semibold text-white whitespace-nowrap tracking-tight"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            nex<span className="text-[#e8b84b]">Slon</span>
-          </span>
-        )}
+  {/* Logo Icon */}
+  <div className="w-[34px] h-[34px] flex items-center justify-center flex-shrink-0">
+    <img
+      src="/logo.png"
+      alt="NexSalon Logo"
+      className="w-full h-full object-contain"
+    />
+  </div>
 
-        <button
-          onClick={onToggle}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto p-1 flex-shrink-0 bg-transparent border-none cursor-pointer
-                     text-[#5a4a35] hover:text-[#c5b49a] transition-colors"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d={collapsed ? "M9 18l6-6-6-6" : "M15 18l-6-6 6-6"} />
-          </svg>
-        </button>
-      </div>
+  {/* Logo Text */}
+  {!collapsed && (
+    <span
+      className="text-[18px] font-semibold text-white whitespace-nowrap tracking-tight"
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      NEX<span className="text-[#e8b84b]">SALON</span>
+    </span>
+  )}
 
+  {/* Collapse Button */}
+  <button
+    onClick={onToggle}
+    title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+    className="ml-auto p-1 flex-shrink-0 bg-transparent border-none cursor-pointer
+               text-[#5a4a35] hover:text-[#c5b49a] transition-colors"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d={collapsed ? "M9 18l6-6-6-6" : "M15 18l-6-6 6-6"} />
+    </svg>
+  </button>
+
+</div>
       {/* ── Nav sections ── */}
       {NAV_SECTIONS.map(({ section, items }) => (
         <div key={section}>
