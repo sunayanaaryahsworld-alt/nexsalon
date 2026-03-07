@@ -1,0 +1,296 @@
+[2026-01-27T10:31:08.713Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:31:08.715Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:31:09.633Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:01",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:31:09.896Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:31:09.897Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjAc0ay1fjs0-kuZjq2/attendance/27-01-2026"
+[2026-01-27T10:31:09.898Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:31:10.165Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:33:51.092Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:33:51.094Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:33:51.383Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:03",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:33:51.648Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:33:51.648Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjAc0ay1fjs0-kuZjq2/attendance/26-01-2026"
+[2026-01-27T10:33:51.649Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:33:51.912Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:33:59.393Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 4
+}
+[2026-01-27T10:33:59.394Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:33:59.687Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:03",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:33:59.949Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:33:59.949Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjAc0ay1fjs0-kuZjq2/attendance/26-01-2026"
+[2026-01-27T10:33:59.950Z] PROCESSING RECORD: {
+  "employeeId": "-OjEybzoEKXbXnC06yUW",
+  "status": "present",
+  "checkIn": "16:03",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:34:00.211Z] FOUND GLOBAL EMPLOYEE: -OjEybzoEKXbXnC06yUW 
+[2026-01-27T10:34:00.212Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjEybzoEKXbXnC06yUW/attendance/26-01-2026"
+[2026-01-27T10:34:00.212Z] PROCESSING RECORD: {
+  "employeeId": "-Oj_Npxx1ooK-cdCrwc_",
+  "status": "present",
+  "checkIn": "16:03",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:34:00.473Z] FOUND GLOBAL EMPLOYEE: -Oj_Npxx1ooK-cdCrwc_ 
+[2026-01-27T10:34:00.474Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-Oj_Npxx1ooK-cdCrwc_/attendance/26-01-2026"
+[2026-01-27T10:34:00.475Z] PROCESSING RECORD: {
+  "employeeId": "-OjjR1HqOc72roETKf5N",
+  "status": "present",
+  "checkIn": "16:03",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:34:00.738Z] FOUND GLOBAL EMPLOYEE: -OjjR1HqOc72roETKf5N 
+[2026-01-27T10:34:00.739Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjjR1HqOc72roETKf5N/attendance/26-01-2026"
+[2026-01-27T10:34:00.739Z] UPDATES TO COMMIT: 4
+[2026-01-27T10:34:01.003Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:35:32.691Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:35:32.692Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:35:33.250Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:35:33.509Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:35:33.513Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:35:39.462Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:35:39.463Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:35:39.749Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:05",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:35:40.010Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:35:40.011Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjAc0ay1fjs0-kuZjq2/attendance/27-01-2026"
+[2026-01-27T10:35:40.012Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:35:40.275Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:35:46.015Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:35:46.015Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:35:46.577Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:35:46.835Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:35:46.838Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:38:20.151Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:38:20.153Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:38:20.449Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:08",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:38:20.709Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:38:20.710Z] ATTENDANCE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt/employees/-OjAc0ay1fjs0-kuZjq2/attendance/27-01-2026"
+[2026-01-27T10:38:20.710Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:38:20.975Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:38:25.570Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:38:25.571Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:38:26.151Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:38:26.409Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:38:26.411Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:38:39.886Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:38:39.886Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:38:40.439Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:38:40.698Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:38:40.700Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:47:59.435Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:47:59.437Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:48:00.594Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:17",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:48:00.865Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:48:00.866Z] ATTENDANCE PATH (GLOBAL): "salonandspa/employees/-OjAc0ay1fjs0-kuZjq2/attendance/27-01-2026"
+[2026-01-27T10:48:00.867Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:48:01.144Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:56:35.014Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:56:35.015Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:56:35.577Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:56:35.844Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:56:35.846Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:56:39.654Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:56:39.655Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:56:39.946Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:26",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:56:40.215Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:56:40.216Z] ATTENDANCE PATH (GLOBAL): "salonandspa/employees/-OjAc0ay1fjs0-kuZjq2/attendance/27-01-2026"
+[2026-01-27T10:56:40.217Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:56:40.490Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:56:52.548Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:56:52.548Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:56:53.107Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:56:53.374Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:56:53.375Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:57:00.799Z] MARK ATTENDANCE UPDATE REQUEST: {
+  "params": {
+    "type": "salon",
+    "placeId": "-OjAIH8CWeX-2l5Ba4Zt"
+  },
+  "bodyRecordsCount": 1
+}
+[2026-01-27T10:57:00.801Z] MARK ATTENDANCE BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:57:01.090Z] PROCESSING RECORD: {
+  "employeeId": "-OjAc0ay1fjs0-kuZjq2",
+  "status": "present",
+  "checkIn": "16:26",
+  "checkOut": null,
+  "remarks": ""
+}
+[2026-01-27T10:57:01.358Z] FOUND GLOBAL EMPLOYEE: -OjAc0ay1fjs0-kuZjq2 
+[2026-01-27T10:57:01.359Z] ATTENDANCE PATH (GLOBAL): "salonandspa/employees/-OjAc0ay1fjs0-kuZjq2/attendance/27-01-2026"
+[2026-01-27T10:57:01.360Z] UPDATES TO COMMIT: 1
+[2026-01-27T10:57:01.632Z] ATTENDANCE UPDATED SUCCESSFULLY 
+[2026-01-27T10:57:35.706Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:57:35.706Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:57:36.260Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:57:36.527Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:57:36.529Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T10:59:00.121Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T10:59:00.122Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T10:59:00.658Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T10:59:00.920Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T10:59:00.922Z] GET DAILY SUCCESS: {
+  "count": 1
+}
+[2026-01-27T11:01:47.902Z] GET DAILY REQUEST: {
+  "type": "salon",
+  "placeId": "-OjAIH8CWeX-2l5Ba4Zt",
+  "date": "27-01-2026"
+}
+[2026-01-27T11:01:47.902Z] GET DAILY BASE PATH: "salonandspa/salons/-OjAIH8CWeX-2l5Ba4Zt"
+[2026-01-27T11:01:48.427Z] GET DAILY: Found employees wrapper {
+  "count": 4
+}
+[2026-01-27T11:01:48.691Z] FOUND RECORD for -OjAc0ay1fjs0-kuZjq2 on 27-01-2026 
+[2026-01-27T11:01:48.693Z] GET DAILY SUCCESS: {
+  "count": 1
+}
