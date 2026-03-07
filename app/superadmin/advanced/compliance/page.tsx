@@ -2,10 +2,26 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const API_BASE = "http://localhost:3001/api/compliance";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE ||
+  "http://localhost:3001/api/compliance";
+
+type AuditLog = {
+  id?: string;
+  _id?: string;
+  type?: string;
+  activity?: string;
+  createdAt?: number;
+  updatedBy?: {
+    name?: string;
+    role?: string;
+  };
+  businessId?: string;
+  ipAddress?: string;
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const timeAgo = (ms) => {
+const timeAgo = (ms: any) => {
   if (!ms) return "—";
   const diff = Date.now() - ms;
   const mins = Math.floor(diff / 60000);
@@ -30,10 +46,11 @@ const TYPE_META = {
   default:        { label: "Activity",          color: "#6b7280", bg: "#f3f4f6" },
 };
 
-const getTypeMeta = (type = "") => TYPE_META[type] || TYPE_META.default;
+const getTypeMeta = (type: string = "") =>
+  TYPE_META[type as keyof typeof TYPE_META] || TYPE_META.default;
 
 // ── Sub-components ────────────────────────────────────────────────────────────
-const StatCard = ({ label, value, sub, accent }) => (
+const StatCard = ({ label, value, sub, accent }: any) => (
   <div style={{
     background: "#fff",
     border: "1px solid #e5e7eb",
@@ -51,7 +68,7 @@ const StatCard = ({ label, value, sub, accent }) => (
   </div>
 );
 
-const Badge = ({ type }) => {
+const Badge = ({ type }: any) => {
   const meta = getTypeMeta(type);
   return (
     <span style={{
@@ -68,7 +85,7 @@ const Badge = ({ type }) => {
   );
 };
 
-const LogRow = ({ log }) => (
+const LogRow = ({ log }: any) => (
   <div style={{
     display: "flex",
     alignItems: "flex-start",
@@ -141,8 +158,8 @@ const Spinner = () => (
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ComplianceAuditPage() {
-  const [logs, setLogs]         = useState([]);
-  const [summary, setSummary]   = useState(null);
+const [logs, setLogs] = useState<any[]>([]);
+ const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading]   = useState(true);
   const [exporting, setExporting] = useState(false);
   const [days, setDays]         = useState("30");
@@ -172,12 +189,12 @@ const logsPerPage = 10;
     setLogs(json.data || []);
     setTotalPages(json.totalPages || 1);
 
-  } catch (err) {
-    setError(err.message);
-  } finally {
+  } catch (err: any) {
+  setError(err?.message || "Something went wrong");
+} finally {
     setLoading(false);
   }
-}, [days, currentPage]);
+}, [days, currentPage, logsPerPage]);
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -189,10 +206,10 @@ const logsPerPage = 10;
     } catch (_) {}
   }, [days]);
 
-  useEffect(() => {
-    fetchLogs();
-    fetchSummary();
- }, [fetchLogs, fetchSummary, currentPage]);
+useEffect(() => {
+  fetchLogs();
+  fetchSummary();
+}, [fetchLogs, fetchSummary]);
 
   const handleExport = async () => {
     setExporting(true);
@@ -213,9 +230,9 @@ const logsPerPage = 10;
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(link.href);
-    } catch (err) {
-      alert("Export failed: " + err.message);
-    } finally {
+    } catch (err: any) {
+  alert("Export failed: " + err.message);
+} finally {
       setExporting(false);
     }
   };
@@ -415,7 +432,7 @@ const logsPerPage = 10;
         ) : (
           <div style={{ overflow: "hidden", borderRadius: "0 0 16px 16px" }}>
             {filteredLogs.map((log) => (
-              <LogRow key={log.id} log={log} />
+              <LogRow key={log.id || log._id} log={log} />
             ))}
             <div
   style={{
