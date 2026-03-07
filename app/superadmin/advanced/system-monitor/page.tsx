@@ -9,7 +9,7 @@ export default function SystemMonitorPage() {
   // Initialize with empty arrays to prevent .map() errors
   const [data, setData] = useState({ metrics: [], services: [] });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchSystemData = useCallback(async () => {
     setLoading(true);

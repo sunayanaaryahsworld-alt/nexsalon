@@ -21,7 +21,7 @@ type AuditLog = {
 };
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const timeAgo = (ms: any) => {
+const timeAgo = (ms: number | undefined) => {
   if (!ms) return "—";
   const diff = Date.now() - ms;
   const mins = Math.floor(diff / 60000);
@@ -158,8 +158,8 @@ const Spinner = () => (
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ComplianceAuditPage() {
-const [logs, setLogs] = useState<any[]>([]);
- const [summary, setSummary] = useState<any>(null);
+const [logs, setLogs] = useState<AuditLog[]>([]);
+ const [summary, setSummary] = useState<any | null>(null);
   const [loading, setLoading]   = useState(true);
   const [exporting, setExporting] = useState(false);
   const [days, setDays]         = useState("30");
