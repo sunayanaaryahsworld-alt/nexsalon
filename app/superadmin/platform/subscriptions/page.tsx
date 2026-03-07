@@ -26,7 +26,6 @@ interface ExpiringItem {
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   "http://localhost:3001/api";
-
 /* ─────────────────────────────────────────
    EDIT PLAN MODAL
 ───────────────────────────────────────── */
