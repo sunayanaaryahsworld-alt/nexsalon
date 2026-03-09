@@ -62,7 +62,10 @@ const allowedOrigins = [
     // ✅ ADD THESE
   "https://super-six-flax.vercel.app",
   "https://super-ibobrnsto-sunayanaaryahsworld-alts-projects.vercel.app",
-  "https://sunayanaaryahsworld-alts-projects.vercel.app"
+  "https://sunayanaaryahsworld-alts-projects.vercel.app",
+  
+   // ✅ ADD THIS
+  "https://nex-tau-liard.vercel.app"
 
 ];
 
