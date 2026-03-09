@@ -163,8 +163,7 @@ const PLAN_COLORS: Record<string, string> = {
 };
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:3001/api";
+ process.env.NEXT_PUBLIC_API_URL;
 
 const API_URL = `${API_BASE}/superdashboard/dashboard`;
   
@@ -420,7 +419,7 @@ export default function DashboardPage() {
     const fetchDashboard = async () => {
       try {
       const res  = await fetch(API_URL);
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
 
         setStats(data.stats);
 

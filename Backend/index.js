@@ -79,28 +79,14 @@ const allowedOrigins = [
 //       callback(new Error("Not allowed by CORS"));
 //     }
 //   },
+
 const corsOptions = {
-  origin: function (origin, callback) {
-
-    if (!origin) return callback(null, true);
-
-    if (
-      allowedOrigins.includes(origin) ||
-      origin.includes("vercel.app") ||   // ✅ ADD THIS LINE
-      process.env.NODE_ENV === "development"
-    ) {
-      callback(null, true);
-    } else {
-      console.error(`CORS Error: Origin ${origin} not allowed`);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: true,
   credentials: true,
-  optionsSuccessStatus: 200
 };
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));

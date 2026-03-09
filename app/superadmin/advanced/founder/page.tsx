@@ -22,8 +22,7 @@ const [dbData, setDbData] = useState<FounderData | null>(null);
     const fetchData = async () => {
       try {
     const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:3001/api";
+process.env.NEXT_PUBLIC_API_URL;
 
 const API_URL = `${API_BASE}/founder/metrics`;
 

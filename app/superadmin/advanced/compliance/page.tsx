@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:3001/api";
+  process.env.NEXT_PUBLIC_API_URL
 
 type AuditLog = {
   id?: string;

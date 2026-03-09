@@ -17,8 +17,7 @@ export default function WhiteLabelPage() {
   });
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:3001/api";
+process.env.NEXT_PUBLIC_API_URL;
 
 const API_URL = `${API_BASE}/white-label/stats`;
   

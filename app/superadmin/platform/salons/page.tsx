@@ -33,8 +33,7 @@ interface Summary {
 }
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:3001/api";
+  process.env.NEXT_PUBLIC_API_URL;
   
   
 const ITEMS_PER_PAGE = 10;
@@ -389,12 +388,17 @@ export default function SalonsPage() {
   const fetchSalons = useCallback(async (currentPage: number) => {
     setLoading(true);
     setError(null);
+    if (!API_BASE) {
+  setError("API URL not set");
+  setLoading(false);
+  return;
+}
     try {
-      const res  = await fetch(
-        `http://localhost:3001/api/salon/salons?page=${currentPage}&limit=${ITEMS_PER_PAGE}`
-      );
+     const res = await fetch(
+  `${API_BASE}/salon/salons?page=${currentPage}&limit=${ITEMS_PER_PAGE}`
+);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data = await res.json();
+    const data = await res.json().catch(() => ({}));
 
      const raw = Array.isArray(data)
   ? data
@@ -432,7 +436,7 @@ export default function SalonsPage() {
     } finally {
       setLoading(false);
     }
-}, []);
+}, [API_BASE]);
 
   useEffect(() => { fetchSalons(page); }, [page, fetchSalons]);
 
@@ -455,7 +459,7 @@ export default function SalonsPage() {
   const handleReactivate = async (salon: Salon) => {
     setSalons((prev) => prev.map((s) => (s.id === salon.id ? { ...s, status: "Active" } : s)));
     try {
-      await fetch(`${API_BASE}/salon/salons/${salon.firebaseId}/status`, {
+     await fetch(`${API_BASE}/salon/${salon.firebaseId}/status`, {
         method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "active" }),
       });
     } catch { fetchSalons(page); }
@@ -465,7 +469,7 @@ export default function SalonsPage() {
     const newStatus: Status = salon.status === "Suspended" ? "Active" : "Suspended";
     setSalons((prev) => prev.map((s) => (s.id === salon.id ? { ...s, status: newStatus } : s)));
     try {
-     await fetch(`${API_BASE}/salon/salons/${salon.firebaseId}/status`, {
+    await fetch(`${API_BASE}/salon/${salon.firebaseId}/status`, {
         method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: newStatus.toLowerCase() }),
       });
     } catch { fetchSalons(page); }

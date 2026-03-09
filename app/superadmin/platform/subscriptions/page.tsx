@@ -24,8 +24,7 @@ interface ExpiringItem {
 }
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:3001/api";
+  process.env.NEXT_PUBLIC_API_URL;
 /* ─────────────────────────────────────────
    EDIT PLAN MODAL
 ───────────────────────────────────────── */
@@ -116,7 +115,7 @@ useEffect(() => {
   `${API_BASE}/superadminsubscriptions/dashboard`
 );
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       setPlans(data.plans || []);
       setExpiring(data.expiring || []);
