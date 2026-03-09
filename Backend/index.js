@@ -43,43 +43,47 @@ import superadminsubscriptionRoutes from "./routes/superadminsubscriptionRoutes.
 dotenv.config();
 
 const app = express();
-app.set("trust proxy", 1);
 
 /* -------------------- CORS CONFIG -------------------- */
-// app.use(cors({
-//   origin: "*",
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// }));
-
-// app.options("*", cors());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:3002",
+  "http://localhost:3003",
+  "http://localhost:5173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
+  "http://127.0.0.1:3002",
+  "http://127.0.0.1:3003",
+  "http://127.0.0.1:5173",
+  "https://adminglowbiz.vercel.app",
+  "https://customerglowbiz.vercel.app",
+  "https://nexsalon.vercel.app",
+  "https://super-six-flax.vercel.app",
+  "https://super-ibobrnsto-sunayanaaryahsworld-alts-projects.vercel.app",
+  "https://sunayanaaryahsworld-alts-projects.vercel.app",
+  "https://nex-tau-liard.vercel.app",
+  "https://salonn-kappa.vercel.app", // ✅ Added - was missing, causing the CORS error
+];
 
 app.use(cors({
-  origin: "*",
-  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g. Postman, mobile apps, curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`CORS blocked: ${origin}`);
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Origin", "X-Requested-With", "Accept"],
+  credentials: true,
 }));
 
 app.options("*", cors());
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
 /* -------------------- MIDDLEWARE -------------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
