@@ -30,7 +30,7 @@ import businessDetails from "./routes/businessDetails.routes.js";
 import contactRoutes from './routes/contactRoutes.js';
 //superadmin
 import SuperAdmindashboardRoutes from "./routes/superadmin-dashboardRoutes.js";
-import  salonRoutes from "./routes/salonRoutes.js";
+import salonRoutes from "./routes/salonRoutes.js";
 import userManagementRoutes from "./routes/userManagementRoutes.js";
 import complianceRoutes from "./routes/complianceRoutes.js";
 import systemRoutes from "./routes/system.js";
@@ -45,52 +45,14 @@ dotenv.config();
 const app = express();
 
 /* -------------------- CORS CONFIG -------------------- */
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "http://localhost:3002",
-  "http://localhost:3003",
-  "http://localhost:5173",
-  "http://127.0.0.1:3000",
-  "http://127.0.0.1:3001",
-  "http://127.0.0.1:3002",
-  "http://127.0.0.1:3003",
-  "http://127.0.0.1:5173",
-  "https://adminglowbiz.vercel.app",
-  "https://customerglowbiz.vercel.app",
-  "https://nexsalon.vercel.app",
-    // ✅ ADD THESE
-  "https://super-six-flax.vercel.app",
-  "https://super-ibobrnsto-sunayanaaryahsworld-alts-projects.vercel.app",
-  "https://sunayanaaryahsworld-alts-projects.vercel.app",
-  
-   // ✅ ADD THIS
-  "https://nex-tau-liard.vercel.app"
-
-];
-
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
-//       callback(null, true);
-//     } else {
-//       console.error(`CORS Error: Origin ${origin} not allowed`);
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-
-const corsOptions = {
+app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-};
+}));
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-// Handling preflight for all routes is already covered by app.use(cors(corsOptions))
+app.options("*", cors());
 
 /* -------------------- MIDDLEWARE -------------------- */
 app.use(express.json());
@@ -147,7 +109,7 @@ app.use("/api/admin", calendarSettingsRoutes);
 app.use("/api/admin", businessDetails);
 //superadmin
 app.use("/api/superdashboard", SuperAdmindashboardRoutes);
-app.use( "/api/salon", salonRoutes);
+app.use("/api/salon", salonRoutes);
 app.use("/api/superdashboard", userManagementRoutes);
 app.use("/api/compliance", complianceRoutes);
 app.use("/api/system", systemRoutes);
