@@ -65,6 +65,7 @@ const allowedOrigins = [
   "https://nex-tau-liard.vercel.app",
   "https://salonn-kappa.vercel.app",
   "https://salonn-l2r0e09fd-sunayanaaryahsworld-alts-projects.vercel.app", // ✅ Added
+   "https://final-nine-azure.vercel.app", // ✅ ADD THIS LINE
 ];
 
 app.use(cors({
