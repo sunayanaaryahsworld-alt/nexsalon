@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 /* ─────────────────────────────────────────
    TYPES
@@ -12,7 +13,7 @@ interface Plan {
   salons: number;
   features: string[];
   popular?: boolean;
-    revenue?: number;   // ✅ ADD THIS
+  revenue?: number;   // ✅ ADD THIS
 }
 
 interface ExpiringItem {
@@ -23,14 +24,13 @@ interface ExpiringItem {
   daysLeft: number;
 }
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 /* ─────────────────────────────────────────
    EDIT PLAN MODAL
 ───────────────────────────────────────── */
 function EditModal({ plan, onClose }: { plan: Plan; onClose: () => void }) {
   const [price, setPrice] = useState(plan.price.replace("₹", "").replace(",", ""));
-  const [name, setName]   = useState(plan.name);
+  const [name, setName] = useState(plan.name);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -96,39 +96,44 @@ function EditModal({ plan, onClose }: { plan: Plan; onClose: () => void }) {
 ───────────────────────────────────────── */
 export default function SubscriptionsPage() {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
-  const [renewed, setRenewed]         = useState<number[]>([]);
-const [plans, setPlans] = useState<Plan[]>([]);
-const [expiring, setExpiring] = useState<ExpiringItem[]>([]);
-const [barData, setBarData] = useState<{ label: string; value: number }[]>([]);
+  const [renewed, setRenewed] = useState<number[]>([]);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [expiring, setExpiring] = useState<ExpiringItem[]>([]);
+  const [barData, setBarData] = useState<{ label: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleRenew = (id: number) => setRenewed((prev) => [...prev, id]);
 
- const MAX_BAR =
-  barData.length > 0
-    ? Math.max(...barData.map((d) => d.value), 10)
-    : 10;
-    
-useEffect(() => {
-  const fetchDashboard = async () => {
-    try {
-      const res = await fetch(
-  `${API_BASE}/superadminsubscriptions/dashboard`
-);
+  const MAX_BAR =
+    barData.length > 0
+      ? Math.max(...barData.map((d) => d.value), 10)
+      : 10;
 
-      const data = await res.json().catch(() => ({}));
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/superadminsubscriptions/dashboard`
+        );
 
-      setPlans(data.plans || []);
-      setExpiring(data.expiring || []);
-      setBarData(data.revenueByPlan || []);
+        const data = await res.json().catch(() => ({}));
 
-    } catch (err: unknown) {
-      console.error("Dashboard fetch error", err);
-    }
-  };
+        setPlans(data.plans || []);
+        setExpiring(data.expiring || []);
+        setBarData(data.revenueByPlan || []);
 
-  fetchDashboard();
+      } catch (err: unknown) {
+        console.error("Dashboard fetch error", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-}, []);
+    fetchDashboard();
+
+  }, []);
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="font-['DM_Sans',sans-serif] text-[#1a1208]">
@@ -175,7 +180,7 @@ useEffect(() => {
             {/* Revenue */}
             <div className="flex items-baseline gap-1 mb-2 flex-wrap">
               <span className="text-[26px] sm:text-[28px] font-bold text-[#1a1208]">
-               ₹{plan.revenue ? plan.revenue.toLocaleString() : 0}
+                ₹{plan.revenue ? plan.revenue.toLocaleString() : 0}
               </span>
               <span className="text-sm text-[#7a6a55]">total revenue</span>
             </div>
@@ -235,11 +240,11 @@ useEffect(() => {
 
               {/* Bars */}
               {barData.map((d, i) => {
-                const bw   = 68;
-                const gap  = 28;
-                const x    = 52 + i * (bw + gap);
+                const bw = 68;
+                const gap = 28;
+                const x = 52 + i * (bw + gap);
                 const barH = (d.value / MAX_BAR) * 160;
-                const y    = 185 - barH;
+                const y = 185 - barH;
                 return (
                   <g key={d.label}>
                     {d.value > 0 && (

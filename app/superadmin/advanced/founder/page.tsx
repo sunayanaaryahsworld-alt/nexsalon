@@ -2,43 +2,53 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  DollarSign, BarChart3, TrendingDown, TrendingUp, Users, ArrowUpRight, Gem
+  IndianRupee,
+  BarChart3,
+  TrendingDown,
+  TrendingUp,
+  Users,
+  ArrowUpRight,
+  Gem
 } from "lucide-react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 const FounderModePage = () => {
-type FounderData = {
-  mrr?: number | string;
-  arr?: number | string;
-  churnRate?: string;
-  ltv?: number | string;
-  cac?: number | string;
-  activeSubscriptions?: number;
-  totalAdmins?: number;
-};
+  type FounderData = {
+    mrr?: number | string;
+    arr?: number | string;
+    churnRate?: string;
+    ltv?: number | string;
+    cac?: number | string;
+    activeSubscriptions?: number;
+    totalAdmins?: number;
+  };
 
-const [dbData, setDbData] = useState<FounderData | null>(null);
+  const [dbData, setDbData] = useState<FounderData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-    const API_BASE =
-process.env.NEXT_PUBLIC_API_URL;
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
-const API_URL = `${API_BASE}/founder/metrics`;
+        const API_URL = `${API_BASE}/founder/metrics`;
 
-  const response = await fetch(API_URL);
+        setLoading(true);
+        const response = await fetch(API_URL);
         const result = await response.json();
         if (result.success) setDbData(result.data);
-    }catch (e: unknown) {
-  console.error("Error fetching founder data", e);
-}
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
- }, []);
+  }, []);
+
+  if (loading) return <LoadingScreen />;
 
   // Update KPI data with database values if they exist
   const KPIS = [
-    { title: "MRR", value: dbData?.mrr || "₹18.4L", growth: "+13.6% MoM", icon: DollarSign, highlight: true },
+    { title: "MRR", value: dbData?.mrr || "₹18.4L", growth: "+13.6% MoM", icon: IndianRupee, highlight: true },
     { title: "ARR", value: dbData?.arr || "₹2.2Cr", growth: "+13.6% MoM", icon: BarChart3 },
     { title: "Churn Rate", value: dbData?.churnRate || "2.3%", growth: "-0.8% improv.", icon: TrendingDown },
     { title: "LTV", value: dbData?.ltv || "₹3.2L", growth: "+8.4% MoM", icon: TrendingUp },
@@ -46,18 +56,18 @@ const API_URL = `${API_BASE}/founder/metrics`;
     { title: "LTV:CAC Ratio", value: "76:1", growth: "+18% MoM", icon: ArrowUpRight, highlight: true },
   ];
 
- const RETENTION = [
-  {
-    quarter: "Current",
-    value: dbData?.activeSubscriptions && dbData?.totalAdmins
-      ? Math.round(
+  const RETENTION = [
+    {
+      quarter: "Current",
+      value: dbData?.activeSubscriptions && dbData?.totalAdmins
+        ? Math.round(
           (dbData.activeSubscriptions / dbData.totalAdmins) * 100
         )
-      : 95,
-  },
-  { quarter: "Q3 2024", value: 93 },
-  { quarter: "Q2 2024", value: 88 },
-];
+        : 95,
+    },
+    { quarter: "Q3 2024", value: 93 },
+    { quarter: "Q2 2024", value: 88 },
+  ];
 
   return (
     <div className="w-full p-4 lg:p-8">
@@ -94,7 +104,7 @@ const API_URL = `${API_BASE}/founder/metrics`;
 
       {/* RETAINING REST OF YOUR COMPONENTS BELOW... (SVG, INVESTOR SUMMARY, etc.) */}
       {/* ... keeping the SVG MRR Growth Chart and Investor Summary as defined in your original code ... */}
-      
+
       <div className="bg-[#4c2e1f] rounded-2xl p-8 lg:p-10 text-white shadow-xl">
         <div className="flex items-center gap-4 mb-8">
           <Gem size={24} className="text-[#e0b44a]" />

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 const API_URL = `${API_BASE}/superadmin/notifications`;
 const PAGE_SIZE = 10;
 
@@ -23,41 +24,41 @@ function timeAgo(timestamp?: number) {
   if (!timestamp) return "—";
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   const minutes = Math.floor(seconds / 60);
-  const hours   = Math.floor(minutes / 60);
-  const days    = Math.floor(hours / 24);
-  if (days    > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
-  if (hours   > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+  if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
   if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
   return "Just now";
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  NEW_ADMIN:    "New Admin",
+  NEW_ADMIN: "New Admin",
   NEW_CUSTOMER: "New Customer",
 };
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  NEW_ADMIN:    { bg: "bg-[#fdf3e0]", text: "text-[#c8922a]" },
+  NEW_ADMIN: { bg: "bg-[#fdf3e0]", text: "text-[#c8922a]" },
   NEW_CUSTOMER: { bg: "bg-[#e8f5e9]", text: "text-[#2e7d32]" },
 };
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface Notification {
-  id:        string;
-  type:      string;
-  title:     string;
-  message:   string;
+  id: string;
+  type: string;
+  title: string;
+  message: string;
   createdAt?: number;
 }
 
 interface ApiResponse {
-  total:        number;
-  count:        number;
-  currentPage:  number;
-  totalPages:   number;
-  hasNextPage:  boolean;
-  hasPrevPage:  boolean;
+  total: number;
+  count: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
   notifications: Notification[];
 }
 
@@ -83,14 +84,14 @@ function NotificationSkeleton() {
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading,       setLoading]       = useState(true);
-  const [error,         setError]         = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages,  setTotalPages]  = useState(1);
-  const [total,       setTotal]       = useState(0);
-  const [hasNext,     setHasNext]     = useState(false);
-  const [hasPrev,     setHasPrev]     = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
 
   // Default: ALL — show both admins and customers on load
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
@@ -100,7 +101,7 @@ export default function NotificationsPage() {
     setError(null);
     try {
       const params = new URLSearchParams({
-        page:  String(page),
+        page: String(page),
         limit: String(PAGE_SIZE),
         ...(type !== "ALL" && { type }),
       });
@@ -137,6 +138,8 @@ export default function NotificationsPage() {
     setTotal((prev) => Math.max(0, prev - 1));
   };
 
+  if (loading) return <LoadingScreen />;
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -155,11 +158,10 @@ export default function NotificationsPage() {
             <button
               key={t}
               onClick={() => handleTypeChange(t)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                typeFilter === t
-                  ? "bg-[#c8922a] text-white border-[#c8922a]"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-[#c8922a] hover:text-[#c8922a]"
-              }`}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${typeFilter === t
+                ? "bg-[#c8922a] text-white border-[#c8922a]"
+                : "bg-white text-gray-600 border-gray-200 hover:border-[#c8922a] hover:text-[#c8922a]"
+                }`}
             >
               {t === "ALL" ? "All" : TYPE_LABELS[t]}
             </button>
@@ -188,11 +190,7 @@ export default function NotificationsPage() {
       )}
 
       {/* List */}
-      {loading ? (
-        <div className="space-y-5">
-          {Array.from({ length: 4 }).map((_, i) => <NotificationSkeleton key={i} />)}
-        </div>
-      ) : notifications.length === 0 ? (
+      {notifications.length === 0 ? (
         <div className="py-20 text-center text-gray-400">
           <p className="text-4xl mb-3">🔔</p>
           <p className="text-lg">No recent activity</p>
@@ -277,11 +275,10 @@ export default function NotificationsPage() {
                     <button
                       key={p}
                       onClick={() => setCurrentPage(p as number)}
-                      className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
-                        p === currentPage
-                          ? "bg-[#c8922a] text-white"
-                          : "border border-gray-200 text-gray-600 hover:border-[#c8922a] hover:text-[#c8922a]"
-                      }`}
+                      className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${p === currentPage
+                        ? "bg-[#c8922a] text-white"
+                        : "border border-gray-200 text-gray-600 hover:border-[#c8922a] hover:text-[#c8922a]"
+                        }`}
                     >
                       {p}
                     </button>

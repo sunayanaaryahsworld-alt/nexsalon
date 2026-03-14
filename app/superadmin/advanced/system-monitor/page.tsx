@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { RefreshCw, AlertCircle } from "lucide-react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
-const API_BASE =
-process.env.NEXT_PUBLIC_API_URL;
-  
-  
-  type Metric = {
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+
+
+type Metric = {
   label: string;
   value: string | number;
   color?: string;
@@ -23,13 +23,14 @@ type Service = {
 export default function SystemMonitorPage() {
   // Initialize with empty arrays to prevent .map() errors
   const [data, setData] = useState<{
-  metrics: Metric[];
-  services: Service[];
-}>({
-  metrics: [],
-  services: [],
-});
+    metrics: Metric[];
+    services: Service[];
+  }>({
+    metrics: [],
+    services: [],
+  });
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchSystemData = useCallback(async () => {
@@ -38,9 +39,9 @@ export default function SystemMonitorPage() {
     try {
       const response = await fetch(`${API_BASE}/system/metrics`);
       if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-      
+
       const result = await response.json();
-      
+
       if (result.success && result.data) {
         setData({
           metrics: result.data.metrics || [],
@@ -50,17 +51,20 @@ export default function SystemMonitorPage() {
         throw new Error(result.message || "Failed to parse data");
       }
     } catch (err: any) {
-  setError(err?.message || "Fetch failed");
-  console.error("Fetch Error:", err);
-}
-finally {
-      setLoading(false);
+      setError(err?.message || "Fetch failed");
+      console.error("Fetch Error:", err);
     }
- }, []);
+    finally {
+      setLoading(false);
+      setInitialLoad(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchSystemData();
   }, [fetchSystemData]);
+
+  if (loading && initialLoad) return <LoadingScreen />;
 
   if (error) {
     return (
@@ -84,7 +88,7 @@ finally {
           <p className="text-sm text-[#7a6a55] mt-1">Real-time server health and API status</p>
         </div>
 
-        <button 
+        <button
           onClick={fetchSystemData}
           disabled={loading}
           className="w-full sm:w-auto flex items-center justify-center gap-2 border border-[#e8e0d4] bg-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#f3eee6] transition disabled:opacity-50"
@@ -98,7 +102,7 @@ finally {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         {data.metrics.length > 0 ? data.metrics.map((metric, index) => (
           <div key={index} className="bg-[#f9f7f4] border border-[#eee7dc] rounded-2xl p-6 shadow-sm text-center">
-           <h2 className={`text-2xl font-bold ${metric.color || ""}`}>{metric.value}</h2>
+            <h2 className={`text-2xl font-bold ${metric.color || ""}`}>{metric.value}</h2>
             <p className="text-sm text-[#7a6a55] mt-2">{metric.label}</p>
           </div>
         )) : (

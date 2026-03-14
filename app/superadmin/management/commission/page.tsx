@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 type Stat = {
   label: string;
@@ -19,18 +20,18 @@ type Service = {
    DATA
 ───────────────────────────────────────── */
 const STATS: Stat[] = [
-  { label: "Total Payouts (Feb)",  value: "₹4.2L",  icon: "₹", gold: true },
-  { label: "Avg Commission Rate",  value: "11.4%",  icon: "%"              },
-  { label: "Pending Payouts",      value: "₹0.8L",  icon: "↓"              },
-  { label: "Commission Revenue",   value: "₹2.78L", icon: "↗"              },
+  { label: "Total Payouts (Feb)", value: "₹4.2L", icon: "₹", gold: true },
+  { label: "Avg Commission Rate", value: "11.4%", icon: "%" },
+  { label: "Pending Payouts", value: "₹0.8L", icon: "↓" },
+  { label: "Commission Revenue", value: "₹2.78L", icon: "↗" },
 ];
 
 const SERVICES: Service[] = [
-  { name: "Haircut",    tx: "8,420", payout: "₹1.01L", rate: "12%" },
+  { name: "Haircut", tx: "8,420", payout: "₹1.01L", rate: "12%" },
   { name: "Hair Color", tx: "3,240", payout: "₹0.49L", rate: "15%" },
-  { name: "Facial",     tx: "5,610", payout: "₹0.56L", rate: "10%" },
-  { name: "Nail Art",   tx: "2,890", payout: "₹0.23L", rate: "8%"  },
-  { name: "Massage",    tx: "4,120", payout: "₹0.49L", rate: "12%" },
+  { name: "Facial", tx: "5,610", payout: "₹0.56L", rate: "10%" },
+  { name: "Nail Art", tx: "2,890", payout: "₹0.23L", rate: "8%" },
+  { name: "Massage", tx: "4,120", payout: "₹0.49L", rate: "12%" },
 ];
 
 const MONTHS: string[] = ["Oct", "Nov", "Dec", "Jan", "Feb"];
@@ -41,6 +42,15 @@ const PAYOUTS: number[] = [2, 2.7, 3.3, 3.0, 4.1];
 ───────────────────────────────────────── */
 
 export default function CommissionPage() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <LoadingScreen />;
+
   const maxValue = 8;
 
   return (
@@ -81,9 +91,8 @@ export default function CommissionPage() {
             </div>
 
             <div
-              className={`text-xl sm:text-2xl font-semibold mt-3 sm:mt-4 ${
-                stat.gold ? "text-[#c8922a]" : "text-[#1a1208]"
-              }`}
+              className={`text-xl sm:text-2xl font-semibold mt-3 sm:mt-4 ${stat.gold ? "text-[#c8922a]" : "text-[#1a1208]"
+                }`}
             >
               {stat.value}
             </div>
@@ -157,11 +166,11 @@ export default function CommissionPage() {
 
               {/* Bars */}
               {PAYOUTS.map((val, i) => {
-                const barW  = 44;
-                const gap   = 18;
-                const x     = 40 + i * (barW + gap);
-                const barH  = (val / maxValue) * 180;
-                const y     = 200 - barH;
+                const barW = 44;
+                const gap = 18;
+                const x = 40 + i * (barW + gap);
+                const barH = (val / maxValue) * 180;
+                const y = 200 - barH;
                 return (
                   <g key={i}>
                     <rect

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 type AuditLog = {
   id?: string;
@@ -34,15 +34,15 @@ const timeAgo = (ms: number | undefined) => {
 };
 
 const TYPE_META = {
-  Test:           { label: "Test",             color: "#8b5cf6", bg: "#ede9fe" },
-  PlanUpgrade:    { label: "Plan Upgraded",     color: "#059669", bg: "#d1fae5" },
-  PlanDowngrade:  { label: "Plan Downgraded",   color: "#d97706", bg: "#fef3c7" },
-  UserBlocked:    { label: "User Blocked",      color: "#dc2626", bg: "#fee2e2" },
-  UserUnblocked:  { label: "User Unblocked",    color: "#2563eb", bg: "#dbeafe" },
-  SalonSuspend:   { label: "Salon Suspended",   color: "#7c3aed", bg: "#ede9fe" },
-  Commission:     { label: "Commission Changed",color: "#0891b2", bg: "#cffafe" },
-  Automation:     { label: "Automation Rule",   color: "#65a30d", bg: "#ecfccb" },
-  default:        { label: "Activity",          color: "#6b7280", bg: "#f3f4f6" },
+  Test: { label: "Test", color: "#8b5cf6", bg: "#ede9fe" },
+  PlanUpgrade: { label: "Plan Upgraded", color: "#059669", bg: "#d1fae5" },
+  PlanDowngrade: { label: "Plan Downgraded", color: "#d97706", bg: "#fef3c7" },
+  UserBlocked: { label: "User Blocked", color: "#dc2626", bg: "#fee2e2" },
+  UserUnblocked: { label: "User Unblocked", color: "#2563eb", bg: "#dbeafe" },
+  SalonSuspend: { label: "Salon Suspended", color: "#7c3aed", bg: "#ede9fe" },
+  Commission: { label: "Commission Changed", color: "#0891b2", bg: "#cffafe" },
+  Automation: { label: "Automation Rule", color: "#65a30d", bg: "#ecfccb" },
+  default: { label: "Activity", color: "#6b7280", bg: "#f3f4f6" },
 };
 
 const getTypeMeta = (type: string = "") =>
@@ -102,11 +102,11 @@ const LogRow = ({ log }: any) => (
       alignItems: "center", justifyContent: "center", flexShrink: 0,
     }}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
       </svg>
     </div>
 
@@ -141,59 +141,45 @@ const EmptyState = () => (
   </div>
 );
 
-const Spinner = () => (
-  <div style={{ padding: "60px 24px", textAlign: "center" }}>
-    <style>{`
-      @keyframes spin { to { transform: rotate(360deg); } }
-      .loading-spinner {
-        width: 32px; height: 32px; border: 3px solid #e5e7eb;
-        border-top-color: #b8860b; borderRadius: 50%;
-        animation: spin 0.8s linear infinite; margin: 0 auto;
-      }
-    `}</style>
-    <div className="loading-spinner" />
-  </div>
-);
-
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ComplianceAuditPage() {
-const [logs, setLogs] = useState<AuditLog[]>([]);
- const [summary, setSummary] = useState<any | null>(null);
-  const [loading, setLoading]   = useState(true);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [summary, setSummary] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
-  const [days, setDays]         = useState("30");
+  const [days, setDays] = useState("30");
   const [typeFilter, setTypeFilter] = useState("all");
   const [exportFormat, setExportFormat] = useState("csv");
   const [exportSection, setExportSection] = useState("all");
-  const [error, setError]       = useState(null);
+  const [error, setError] = useState(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-const [totalPages, setTotalPages] = useState(1);
-const logsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
+  const logsPerPage = 10;
 
   const fetchLogs = useCallback(async () => {
-  setLoading(true);
-  setError(null);
+    setLoading(true);
+    setError(null);
 
-  try {
-    const res = await fetch(
-      `${API_BASE}/compliance/logs?days=${days}&page=${currentPage}&limit=${logsPerPage}`,
-      { headers: { Accept: "application/json" } }
-    );
+    try {
+      const res = await fetch(
+        `${API_BASE}/compliance/logs?days=${days}&page=${currentPage}&limit=${logsPerPage}`,
+        { headers: { Accept: "application/json" } }
+      );
 
-    const json = await res.json();
+      const json = await res.json();
 
-    if (!json.success) throw new Error(json.message);
+      if (!json.success) throw new Error(json.message);
 
-    setLogs(json.data || []);
-    setTotalPages(json.totalPages || 1);
+      setLogs(json.data || []);
+      setTotalPages(json.totalPages || 1);
 
-  } catch (err: any) {
-  setError(err?.message || "Something went wrong");
-} finally {
-    setLoading(false);
-  }
-}, [days, currentPage, logsPerPage]);
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }, [days, currentPage, logsPerPage]);
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -202,13 +188,13 @@ const logsPerPage = 10;
       });
       const json = await res.json();
       if (json.success) setSummary(json);
-    } catch (_) {}
+    } catch (_) { }
   }, [days]);
 
-useEffect(() => {
-  fetchLogs();
-  fetchSummary();
-}, [fetchLogs, fetchSummary]);
+  useEffect(() => {
+    fetchLogs();
+    fetchSummary();
+  }, [fetchLogs, fetchSummary]);
 
   const handleExport = async () => {
     setExporting(true);
@@ -219,9 +205,9 @@ useEffect(() => {
       if (!res.ok) throw new Error("Export failed");
 
       const blob = await res.blob();
-      const ext  = exportFormat === "json" ? "json" : "csv";
+      const ext = exportFormat === "json" ? "json" : "csv";
       const filename = `compliance_export_${new Date().toISOString().slice(0, 10)}.${ext}`;
-      
+
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
       link.download = filename;
@@ -230,8 +216,8 @@ useEffect(() => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(link.href);
     } catch (err: any) {
-  alert("Export failed: " + err.message);
-} finally {
+      alert("Export failed: " + err.message);
+    } finally {
       setExporting(false);
     }
   };
@@ -241,6 +227,8 @@ useEffect(() => {
     : logs.filter((l) => l.type === typeFilter);
 
   const uniqueTypes = ["all", ...new Set(logs.map((l) => l.type).filter(Boolean))];
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div style={{
@@ -283,13 +271,13 @@ useEffect(() => {
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
             {exporting ? "Exporting…" : "Export Data"}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: showExportMenu ? 'rotate(180deg)' : 'none', transition: '0.2s' }}>
-              <polyline points="6 9 12 15 18 9"/>
+              <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
 
@@ -380,9 +368,9 @@ useEffect(() => {
             <select
               value={days}
               onChange={(e) => {
-  setDays(e.target.value);
-  setCurrentPage(1);
-}}
+                setDays(e.target.value);
+                setCurrentPage(1);
+              }}
               style={{
                 padding: "7px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb",
                 fontSize: 13, color: "#374151", background: "#fff", cursor: "pointer", outline: "none",
@@ -397,9 +385,9 @@ useEffect(() => {
             <select
               value={typeFilter}
               onChange={(e) => {
-  setTypeFilter(e.target.value);
-  setCurrentPage(1);
-}}
+                setTypeFilter(e.target.value);
+                setCurrentPage(1);
+              }}
               style={{
                 padding: "7px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb",
                 fontSize: 13, color: "#374151", background: "#fff", cursor: "pointer", outline: "none",
@@ -424,58 +412,56 @@ useEffect(() => {
               color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13,
             }}>Retry</button>
           </div>
-        ) : loading ? (
-          <Spinner />
         ) : filteredLogs.length === 0 ? (
           <EmptyState />
         ) : (
           <div style={{ overflow: "hidden", borderRadius: "0 0 16px 16px" }}>
-            {filteredLogs.map((log) => (
+            {filteredLogs.map((log: any) => (
               <LogRow key={log.id || log._id} log={log} />
             ))}
             <div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "16px 24px",
-    borderTop: "1px solid #f3f4f6"
-  }}
->
-  <button
-    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-    disabled={currentPage === 1}
-    style={{
-      padding: "6px 16px",
-      borderRadius: 6,
-      border: "1px solid #e5e7eb",
-      cursor: "pointer",
-      opacity: currentPage === 1 ? 0.4 : 1
-    }}
-  >
-    Previous
-  </button>
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "16px 24px",
+                borderTop: "1px solid #f3f4f6"
+              }}
+            >
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: 6,
+                  border: "1px solid #e5e7eb",
+                  cursor: "pointer",
+                  opacity: currentPage === 1 ? 0.4 : 1
+                }}
+              >
+                Previous
+              </button>
 
-  <span style={{ fontSize: 13, color: "#6b7280" }}>
-    Page {currentPage} of {totalPages}
-  </span>
+              <span style={{ fontSize: 13, color: "#6b7280" }}>
+                Page {currentPage} of {totalPages}
+              </span>
 
-  <button
-    onClick={() =>
-      setCurrentPage((p) => Math.min(p + 1, totalPages))
-    }
-    disabled={currentPage === totalPages}
-    style={{
-      padding: "6px 16px",
-      borderRadius: 6,
-      border: "1px solid #e5e7eb",
-      cursor: "pointer",
-      opacity: currentPage === totalPages ? 0.4 : 1
-    }}
-  >
-    Next
-  </button>
-</div>
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: 6,
+                  border: "1px solid #e5e7eb",
+                  cursor: "pointer",
+                  opacity: currentPage === totalPages ? 0.4 : 1
+                }}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

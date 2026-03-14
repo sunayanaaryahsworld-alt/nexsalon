@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 type PeakHour = {
   label: string;
@@ -30,12 +31,21 @@ const TOP_SERVICES: Service[] = [
 ];
 
 export default function ReportsPage() {
-const maxServiceValue =
-  TOP_SERVICES.length > 0
-    ? Math.max(...TOP_SERVICES.map((s) => s.value))
-    : 1;
- const maxBookings: number = 1000;
-const maxCustomers: number = 1.4;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <LoadingScreen />;
+
+  const maxServiceValue =
+    TOP_SERVICES.length > 0
+      ? Math.max(...TOP_SERVICES.map((s) => s.value))
+      : 1;
+  const maxBookings: number = 1000;
+  const maxCustomers: number = 1.4;
 
   return (
     <div className="min-h-screen bg-[#f5f1ea] pt-4 pb-8 font-sans text-[#1a1208] w-full">
@@ -217,9 +227,8 @@ const maxCustomers: number = 1.4;
 
               <div className="w-full h-3 bg-[#e9e1d6] rounded-full">
                 <div
-                  className={`h-3 rounded-full ${
-                    index === 0 ? "bg-[#d4a62a]" : "bg-[#6b3f1d]"
-                  }`}
+                  className={`h-3 rounded-full ${index === 0 ? "bg-[#d4a62a]" : "bg-[#6b3f1d]"
+                    }`}
                   style={{
                     width: `${(service.value / maxServiceValue) * 100}%`,
                   }}

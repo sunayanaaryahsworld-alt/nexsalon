@@ -3,43 +3,44 @@
 import React from 'react';
 import { Search, Plus, Settings, Ban, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useEffect, useState, useCallback } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 // --- Types ---
 type UserStatus = 'active' | 'blocked' | 'pending';
 
 interface RoleSummary {
-  "Super Admin":    number;
-  "Salon Admin":    number;
+  "Super Admin": number;
+  "Salon Admin": number;
   "Branch Manager": number;
-  "Receptionist":   number;
-  "Staff":          number;
+  "Receptionist": number;
+  "Staff": number;
 }
 
 interface StatusSummary {
-  active:  number;
+  active: number;
   blocked: number;
   pending: number;
-  total:   number;
+  total: number;
 }
 
 interface User {
-  id:         string;
-  name:       string;
-  email:      string;
-  role:       string;
-  company:    string;
-  status:     UserStatus;
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  company: string;
+  status: UserStatus;
   lastActive: string;
-  initials:   string;
+  initials: string;
 }
 
 interface Pagination {
   currentPage: number;
-  totalPages:  number;
-  totalUsers:  number;
-  limit:       number;
+  totalPages: number;
+  totalUsers: number;
+  limit: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
 }
@@ -49,10 +50,10 @@ const USERS_PER_PAGE = 7;
 // --- Helper for Status Styling ---
 function getStatusClasses(status: UserStatus) {
   switch (status) {
-    case 'active':  return 'bg-[#E6F9F4] text-[#059669] border-[#D1FAE5]';
+    case 'active': return 'bg-[#E6F9F4] text-[#059669] border-[#D1FAE5]';
     case 'blocked': return 'bg-[#FFF1F2] text-[#E11D48] border-[#FFE4E6]';
     case 'pending': return 'bg-[#FFF7ED] text-[#EA580C] border-[#FFEDD5]';
-    default:        return 'bg-gray-50 text-gray-500 border-gray-100';
+    default: return 'bg-gray-50 text-gray-500 border-gray-100';
   }
 }
 
@@ -102,19 +103,19 @@ function RolesSidebar({
   activeRole,
   onRoleClick,
 }: {
-  roleSummary:   RoleSummary | null;
+  roleSummary: RoleSummary | null;
   statusSummary: StatusSummary | null;
-  activeRole:    string;
-  onRoleClick:   (role: string) => void;
+  activeRole: string;
+  onRoleClick: (role: string) => void;
 }) {
   const [open, setOpen] = useState(false);
 
   const ROLES = [
-    { name: 'Super Admin',    description: 'Full Access'        },
-    { name: 'Salon Admin',    description: 'Salon Management'   },
-    { name: 'Branch Manager', description: 'Branch Operations'  },
-    { name: 'Staff',          description: 'Booking & Services' },
-    { name: 'Receptionist',   description: 'Front Desk'         },
+    { name: 'Super Admin', description: 'Full Access' },
+    { name: 'Salon Admin', description: 'Salon Management' },
+    { name: 'Branch Manager', description: 'Branch Operations' },
+    { name: 'Staff', description: 'Booking & Services' },
+    { name: 'Receptionist', description: 'Front Desk' },
   ];
 
   return (
@@ -193,20 +194,20 @@ function RolesSidebar({
    MAIN PAGE
 ───────────────────────────────────────── */
 export default function UserManagementPage() {
-  const [users,         setUsers]         = useState<User[]>([]);
-  const [search,        setSearch]        = useState("");
-  const [activeRole,    setActiveRole]    = useState("");
-  const [roleSummary,   setRoleSummary]   = useState<RoleSummary | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [search, setSearch] = useState("");
+  const [activeRole, setActiveRole] = useState("");
+  const [roleSummary, setRoleSummary] = useState<RoleSummary | null>(null);
   const [statusSummary, setStatusSummary] = useState<StatusSummary | null>(null);
-  const [pagination,    setPagination]    = useState<Pagination>({
+  const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
-    totalPages:  1,
-    totalUsers:  0,
-    limit:       USERS_PER_PAGE,
+    totalPages: 1,
+    totalUsers: 0,
+    limit: USERS_PER_PAGE,
     hasNextPage: false,
     hasPrevPage: false,
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUsers = useCallback((page: number, searchVal: string, roleVal: string) => {
     if (!API_BASE) return;
@@ -218,12 +219,20 @@ export default function UserManagementPage() {
       .then((data: { users: User[]; pagination: Pagination; roleSummary?: RoleSummary; statusSummary?: StatusSummary }) => {
         setUsers(data.users);
         setPagination(data.pagination);
-        if (data.roleSummary)   setRoleSummary(data.roleSummary);
+        if (data.roleSummary) setRoleSummary(data.roleSummary);
         if (data.statusSummary) setStatusSummary(data.statusSummary);
       })
       .catch((err: unknown) => console.error(err))
       .finally(() => setIsLoading(false));
   }, []);
+
+  // Initial load check
+  const [initialLoad, setInitialLoad] = useState(true);
+  useEffect(() => {
+    if (!isLoading && initialLoad) setInitialLoad(false);
+  }, [isLoading, initialLoad]);
+
+  if (isLoading && initialLoad) return <LoadingScreen />;
 
   // Initial load
   useEffect(() => {
@@ -327,50 +336,50 @@ export default function UserManagementPage() {
               <tbody className="divide-y divide-[#FAF9F6]">
                 {isLoading
                   ? Array.from({ length: USERS_PER_PAGE }).map((_, i) => (
-                      <tr key={i} className="animate-pulse">
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-[#F2EFE6]" />
-                            <div className="space-y-2">
-                              <div className="h-3 w-28 bg-[#F2EFE6] rounded" />
-                              <div className="h-2.5 w-36 bg-[#F2EFE6] rounded" />
-                            </div>
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-[#F2EFE6]" />
+                          <div className="space-y-2">
+                            <div className="h-3 w-28 bg-[#F2EFE6] rounded" />
+                            <div className="h-2.5 w-36 bg-[#F2EFE6] rounded" />
                           </div>
+                        </div>
+                      </td>
+                      {[...Array(3)].map((_, j) => (
+                        <td key={j} className="px-6 py-5">
+                          <div className="h-3 w-20 bg-[#F2EFE6] rounded" />
                         </td>
-                        {[...Array(3)].map((_, j) => (
-                          <td key={j} className="px-6 py-5">
-                            <div className="h-3 w-20 bg-[#F2EFE6] rounded" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
+                      ))}
+                    </tr>
+                  ))
                   : users.map((user) => (
-                      <tr key={user.id} className="hover:bg-[#FDFBF3]/50 transition-colors">
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-[#D4A117] text-white flex items-center justify-center font-bold text-xs ring-4 ring-[#D4A117]/5">
-                              {user.initials}
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-[#433E37]">{user.name}</p>
-                              <p className="text-xs text-[#A6A196]">{user.email}</p>
-                            </div>
+                    <tr key={user.id} className="hover:bg-[#FDFBF3]/50 transition-colors">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-[#D4A117] text-white flex items-center justify-center font-bold text-xs ring-4 ring-[#D4A117]/5">
+                            {user.initials}
                           </div>
-                        </td>
-                        <td className="px-6 py-5">
-                          <p className="text-sm font-bold text-[#433E37]">{user.role}</p>
-                          <p className="text-xs text-[#A6A196]">{user.company}</p>
-                        </td>
-                        <td className="px-6 py-5">
-                          <span className={`px-4 py-1.5 rounded-full text-[11px] font-bold capitalize border ${getStatusClasses(user.status)}`}>
-                            {user.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 text-sm font-medium text-[#8C877D]">
-                          {user.lastActive}
-                        </td>
-                      </tr>
-                    ))}
+                          <div>
+                            <p className="text-sm font-bold text-[#433E37]">{user.name}</p>
+                            <p className="text-xs text-[#A6A196]">{user.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-bold text-[#433E37]">{user.role}</p>
+                        <p className="text-xs text-[#A6A196]">{user.company}</p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <span className={`px-4 py-1.5 rounded-full text-[11px] font-bold capitalize border ${getStatusClasses(user.status)}`}>
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5 text-sm font-medium text-[#8C877D]">
+                        {user.lastActive}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -379,17 +388,17 @@ export default function UserManagementPage() {
           <div className="md:hidden flex-1 overflow-auto">
             {isLoading
               ? Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="px-4 py-4 border-b border-[#FAF9F6] animate-pulse">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#F2EFE6] flex-shrink-0" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3 w-32 bg-[#F2EFE6] rounded" />
-                        <div className="h-2.5 w-40 bg-[#F2EFE6] rounded" />
-                        <div className="h-2.5 w-24 bg-[#F2EFE6] rounded" />
-                      </div>
+                <div key={i} className="px-4 py-4 border-b border-[#FAF9F6] animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#F2EFE6] flex-shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 w-32 bg-[#F2EFE6] rounded" />
+                      <div className="h-2.5 w-40 bg-[#F2EFE6] rounded" />
+                      <div className="h-2.5 w-24 bg-[#F2EFE6] rounded" />
                     </div>
                   </div>
-                ))
+                </div>
+              ))
               : users.map((user) => <UserCard key={user.id} user={user} />)
             }
           </div>
@@ -423,11 +432,10 @@ export default function UserManagementPage() {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page as number)}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-sm font-semibold transition-all ${
-                      pagination.currentPage === page
-                        ? 'bg-[#D4A117] text-white shadow-sm'
-                        : 'text-[#8C877D] hover:bg-[#F9F8F3] hover:text-[#433E37]'
-                    }`}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-sm font-semibold transition-all ${pagination.currentPage === page
+                      ? 'bg-[#D4A117] text-white shadow-sm'
+                      : 'text-[#8C877D] hover:bg-[#F9F8F3] hover:text-[#433E37]'
+                      }`}
                   >
                     {page}
                   </button>

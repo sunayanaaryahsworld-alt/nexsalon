@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Palette, Globe, Sliders } from "lucide-react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 interface Stats {
   whiteLabelActive: number;
@@ -15,18 +16,21 @@ export default function WhiteLabelPage() {
     customDomains: 0,
     themeConfigs: 0,
   });
+  const [loading, setLoading] = useState(true);
 
-const API_BASE =
-process.env.NEXT_PUBLIC_API_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
-const API_URL = `${API_BASE}/white-label/stats`;
-  
- useEffect(() => {
-  fetch(API_URL)
-    .then((res) => res.json())
-    .then((data: Stats) => setStats(data))
-    .catch((err: any) => console.error(err));
-}, []);
+  const API_URL = `${API_BASE}/white-label/stats`;
+
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data: Stats) => setStats(data))
+      .catch((err: any) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="w-full">

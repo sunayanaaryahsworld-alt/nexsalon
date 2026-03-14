@@ -1,39 +1,40 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 /* ─────────────────────────────────────────
    TYPES
 ───────────────────────────────────────── */
-type Status       = "Active" | "Pending" | "Suspended";
-type Plan         = "Enterprise" | "Pro" | "Starter" | "Trial" | "None";
-type Filter       = "All" | Status;
+type Status = "Active" | "Pending" | "Suspended";
+type Plan = "Enterprise" | "Pro" | "Starter" | "Trial" | "None";
+type Filter = "All" | Status;
 type BusinessType = "Salon" | "Spa";
 
 interface Salon {
-  id:             number;
-  firebaseId:     string;
-  ownerId:        string; // ✅ Added — needed for status update API
-  name:           string;
-  owner:          string;
-  city:           string;
-  plan:           Plan;
-  branches:       number;
+  id: number;
+  firebaseId: string;
+  ownerId: string; // ✅ Added — needed for status update API
+  name: string;
+  owner: string;
+  city: string;
+  plan: Plan;
+  branches: number;
   activeBranches: number;
-  revenue:        string;
-  rating:         number | null;
-  status:         Status;
-  type:           BusinessType;
+  revenue: string;
+  rating: number | null;
+  status: Status;
+  type: BusinessType;
 }
 
 interface Summary {
-  total:     number;
-  active:    number;
-  pending:   number;
+  total: number;
+  active: number;
+  pending: number;
   suspended: number;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -42,23 +43,23 @@ const ITEMS_PER_PAGE = 10;
 ───────────────────────────────────────── */
 function formatINR(amount: number): string {
   if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
-  if (amount >= 1000)   return `₹${(amount / 1000).toFixed(1)}K`;
+  if (amount >= 1000) return `₹${(amount / 1000).toFixed(1)}K`;
   return `₹${amount}`;
 }
 
 function normalizePlan(raw = ""): Plan {
   const p = raw.toLowerCase();
-  if (p.includes("enterprise"))                          return "Enterprise";
-  if (p.includes("premium") || p.includes("pro"))       return "Pro";
-  if (p.includes("standard") || p.includes("starter"))  return "Starter";
-  if (p.includes("trial"))                               return "Trial";
+  if (p.includes("enterprise")) return "Enterprise";
+  if (p.includes("premium") || p.includes("pro")) return "Pro";
+  if (p.includes("standard") || p.includes("starter")) return "Starter";
+  if (p.includes("trial")) return "Trial";
   return "None";
 }
 
 function normalizeStatus(raw = ""): Status {
   const s = raw.toLowerCase();
-  if (s === "active")                          return "Active";
-  if (s === "suspended" || s === "cancelled")  return "Suspended";
+  if (s === "active") return "Active";
+  if (s === "suspended" || s === "cancelled") return "Suspended";
   return "Pending";
 }
 
@@ -67,21 +68,21 @@ function normalizeStatus(raw = ""): Status {
 ───────────────────────────────────────── */
 const planColors: Record<Plan, string> = {
   Enterprise: "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
-  Pro:        "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
-  Starter:    "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
-  Trial:      "bg-[#eaf7f0] text-[#27ae60] border-[#c3ecd4]",
-  None:       "bg-[#f5f5f5] text-[#999]   border-[#e0e0e0]",
+  Pro: "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
+  Starter: "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
+  Trial: "bg-[#eaf7f0] text-[#27ae60] border-[#c3ecd4]",
+  None: "bg-[#f5f5f5] text-[#999]   border-[#e0e0e0]",
 };
 
 const statusStyles: Record<Status, string> = {
-  Active:    "bg-[#eaf7f0] text-[#27ae60] border-[#c3ecd4]",
-  Pending:   "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
+  Active: "bg-[#eaf7f0] text-[#27ae60] border-[#c3ecd4]",
+  Pending: "bg-[#fdf3e0] text-[#c8922a] border-[#f0d9b0]",
   Suspended: "bg-[#fdecea] text-[#c0392b] border-[#f5c6c2]",
 };
 
 const statusCountColors: Record<Status, string> = {
-  Active:    "text-[#27ae60]",
-  Pending:   "text-[#c8922a]",
+  Active: "text-[#27ae60]",
+  Pending: "text-[#c8922a]",
   Suspended: "text-[#c0392b]",
 };
 
@@ -162,15 +163,15 @@ function Modal({ salon, onClose }: { salon: Salon; onClose: () => void }) {
         </div>
         <div className="p-6 flex flex-col gap-3 text-sm">
           {[
-            ["Owner",           salon.owner],
-            ["City",            salon.city],
-            ["Business Type",   salon.type],
-            ["Plan",            salon.plan],
-            ["Total Branches",  String(salon.branches)],
+            ["Owner", salon.owner],
+            ["City", salon.city],
+            ["Business Type", salon.type],
+            ["Plan", salon.plan],
+            ["Total Branches", String(salon.branches)],
             ["Active Branches", String(salon.activeBranches)],
-            ["Revenue",         salon.revenue],
-            ["Rating",          salon.rating !== null ? `${salon.rating} ★` : "N/A"],
-            ["Status",          salon.status],
+            ["Revenue", salon.revenue],
+            ["Rating", salon.rating !== null ? `${salon.rating} ★` : "N/A"],
+            ["Status", salon.status],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between border-b border-[#f5f0ea] pb-2 last:border-0">
               <span className="text-[#7a6a55]">{k}</span>
@@ -210,7 +211,7 @@ function Pagination({
     pages.push(totalPages);
   }
   const start = Math.min((page - 1) * perPage + 1, total);
-  const end   = Math.min(page * perPage, total);
+  const end = Math.min(page * perPage, total);
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-4 border-t border-[#e8e0d4]">
@@ -299,17 +300,17 @@ function SalonCard({
    MAIN PAGE
 ───────────────────────────────────────── */
 export default function SalonsPage() {
-  const [search,     setSearch]     = useState("");
-  const [filter,     setFilter]     = useState<Filter>("All");
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<Filter>("All");
   const [typeFilter, setTypeFilter] = useState<BusinessType | null>(null);
-  const [page,       setPage]       = useState(1);
-  const [salons,     setSalons]     = useState<Salon[]>([]);
-  const [summary,    setSummary]    = useState<Summary>({ total: 0, active: 0, pending: 0, suspended: 0 });
-  const [total,      setTotal]      = useState(0);
+  const [page, setPage] = useState(1);
+  const [salons, setSalons] = useState<Salon[]>([]);
+  const [summary, setSummary] = useState<Summary>({ total: 0, active: 0, pending: 0, suspended: 0 });
+  const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [viewSalon,  setViewSalon]  = useState<Salon | null>(null);
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState<string | null>(null);
+  const [viewSalon, setViewSalon] = useState<Salon | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   /* ── Fetch ── */
   const fetchSalons = useCallback(async (currentPage: number) => {
@@ -317,27 +318,27 @@ export default function SalonsPage() {
     setError(null);
     if (!API_BASE) { setError("API URL not set"); setLoading(false); return; }
     try {
-      const res  = await fetch(`${API_BASE}/salon/salons?page=${currentPage}&limit=${ITEMS_PER_PAGE}`);
+      const res = await fetch(`${API_BASE}/salon/salons?page=${currentPage}&limit=${ITEMS_PER_PAGE}`);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json().catch(() => ({}));
-      const raw  = Array.isArray(data) ? data : (data.salons ?? []);
+      const raw = Array.isArray(data) ? data : (data.salons ?? []);
 
       const mapped: Salon[] = raw.map((item: any, idx: number) => ({
-        id:             item.id         ?? idx + 1,
-        firebaseId:     item.firebaseId ?? String(idx),
-        ownerId:        item.ownerId    ?? "",   // ✅ store ownerId from backend
-        name:           item.name       || item.branch    || "Unnamed",
-        owner:          item.owner      || item.ownerName || "Unknown",
-        city:           item.city       || item.address   || "—",
-        plan:           normalizePlan(item.plan ?? item.planName ?? ""),
-        branches:       Number(item.branches       ?? item.branchCount ?? 0),
+        id: item.id ?? idx + 1,
+        firebaseId: item.firebaseId ?? String(idx),
+        ownerId: item.ownerId ?? "",   // ✅ store ownerId from backend
+        name: item.name || item.branch || "Unnamed",
+        owner: item.owner || item.ownerName || "Unknown",
+        city: item.city || item.address || "—",
+        plan: normalizePlan(item.plan ?? item.planName ?? ""),
+        branches: Number(item.branches ?? item.branchCount ?? 0),
         activeBranches: Number(item.activeBranches ?? 0),
-        revenue:        item.revenue != null
+        revenue: item.revenue != null
           ? typeof item.revenue === "number" ? formatINR(item.revenue) : String(item.revenue)
           : "₹0",
         rating: item.rating != null ? Number(item.rating) : null,
         status: normalizeStatus(item.status ?? item.subscriptionStatus ?? ""),
-        type:   item.type?.toLowerCase() === "spa" ? "Spa" : "Salon",
+        type: item.type?.toLowerCase() === "spa" ? "Spa" : "Salon",
       }));
 
       setSalons(mapped);
@@ -363,9 +364,9 @@ export default function SalonsPage() {
   });
 
   /* ── Handlers ── */
-  const handleFilterChange = (f: Filter)       => { setFilter(f); setPage(1); };
-  const handleSearch       = (val: string)     => { setSearch(val); setPage(1); };
-  const handleTypeFilter   = (t: BusinessType) => { setTypeFilter((prev) => (prev === t ? null : t)); setPage(1); };
+  const handleFilterChange = (f: Filter) => { setFilter(f); setPage(1); };
+  const handleSearch = (val: string) => { setSearch(val); setPage(1); };
+  const handleTypeFilter = (t: BusinessType) => { setTypeFilter((prev) => (prev === t ? null : t)); setPage(1); };
 
   // ✅ FIXED: use salon.ownerId (not firebaseId) for the API call
   const updateStatus = async (salon: Salon, newStatus: Status) => {
@@ -387,9 +388,9 @@ export default function SalonsPage() {
 
     try {
       const res = await fetch(`${API_BASE}/salon/${salon.ownerId}/status`, {
-        method:  "PATCH",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ status: newStatus.toLowerCase() }),
+        body: JSON.stringify({ status: newStatus.toLowerCase() }),
       });
       if (!res.ok) {
         // Revert on failure
@@ -403,7 +404,7 @@ export default function SalonsPage() {
   };
 
   const handleReactivate = (salon: Salon) => updateStatus(salon, "Active");
-  const handleSuspend    = (salon: Salon) => {
+  const handleSuspend = (salon: Salon) => {
     const newStatus: Status = salon.status === "Suspended" ? "Active" : "Suspended";
     updateStatus(salon, newStatus);
   };
@@ -412,36 +413,7 @@ export default function SalonsPage() {
 
   /* ── Loading skeleton ── */
   if (loading) {
-    return (
-      <div className="font-['DM_Sans',sans-serif] text-[#1a1208]">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h1 className="text-[22px] sm:text-[28px] font-bold text-[#1a1208] leading-tight">Salon &amp; Spa Management</h1>
-            <p className="text-sm text-[#7a6a55] mt-1">Manage all registered salons and spas on the platform</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
-          {["Total", "Active", "Pending", "Suspended"].map((label) => (
-            <div key={label} className="bg-white border border-[#e8e0d4] rounded-xl p-4 sm:p-5 text-center animate-pulse">
-              <div className="h-8 bg-[#f0ebe3] rounded mx-auto w-12 mb-2" />
-              <p className="text-sm text-[#7a6a55]">{label}</p>
-            </div>
-          ))}
-        </div>
-        <div className="bg-white border border-[#e8e0d4] rounded-2xl">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="px-4 py-4 border-b border-[#f0ebe3] animate-pulse flex gap-3 items-center">
-              <div className="w-9 h-9 rounded-full bg-[#f0ebe3] flex-shrink-0" />
-              <div className="flex-1 space-y-2">
-                <div className="h-3 bg-[#f0ebe3] rounded w-40" />
-                <div className="h-2.5 bg-[#f5f0ea] rounded w-28" />
-              </div>
-              <div className="h-3 bg-[#f0ebe3] rounded w-16" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   /* ── Error state ── */
@@ -473,9 +445,9 @@ export default function SalonsPage() {
       {/* ── Summary Cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-6">
         {[
-          { label: "Total",     value: summary.total,     cls: "text-[#1a1208]" },
-          { label: "Active",    value: summary.active,    cls: statusCountColors.Active },
-          { label: "Pending",   value: summary.pending,   cls: statusCountColors.Pending },
+          { label: "Total", value: summary.total, cls: "text-[#1a1208]" },
+          { label: "Active", value: summary.active, cls: statusCountColors.Active },
+          { label: "Pending", value: summary.pending, cls: statusCountColors.Pending },
           { label: "Suspended", value: summary.suspended, cls: statusCountColors.Suspended },
         ].map(({ label, value, cls }) => (
           <div key={label} className="bg-white border border-[#e8e0d4] rounded-xl p-4 sm:p-5 text-center">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
+import LoadingScreen from "@/app/components/LoadingScreen";
 import {
   MapPin,
   Building2,
@@ -23,48 +24,48 @@ import {
   Legend,
 } from 'recharts';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 /* ─── Types ─── */
 interface RegionStat {
-  city:          string;
-  salons:        number;
-  spas:          number;
-  total:         number;
-  revenue:       number;
+  city: string;
+  salons: number;
+  spas: number;
+  total: number;
+  revenue: number;
   revenueFormatted: string;
-  employees:     number;
-  avgRating:     number | null;
+  employees: number;
+  avgRating: number | null;
 }
 
 interface PlanDist {
-  name:  string;
+  name: string;
   value: number;
 }
 
 interface Summary {
-  totalCities:   number;
-  totalSalons:   number;
-  totalSpas:     number;
-  totalEmployees:number;
-  totalRevenue:  string;
-  planDist:      PlanDist[];
-  regions:       RegionStat[];
+  totalCities: number;
+  totalSalons: number;
+  totalSpas: number;
+  totalEmployees: number;
+  totalRevenue: string;
+  planDist: PlanDist[];
+  regions: RegionStat[];
 }
 
 /* ─── Helpers ─── */
 function formatINR(amount: number): string {
   if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
-  if (amount >= 1000)   return `₹${(amount / 1000).toFixed(1)}K`;
+  if (amount >= 1000) return `₹${(amount / 1000).toFixed(1)}K`;
   return `₹${amount}`;
 }
 
 const PLAN_COLORS: Record<string, string> = {
   Enterprise: '#D4A117',
-  Pro:        '#c8922a',
-  Starter:    '#f0c040',
-  Trial:      '#a3c4bc',
-  None:       '#e0d8c8',
+  Pro: '#c8922a',
+  Starter: '#f0c040',
+  Trial: '#a3c4bc',
+  None: '#e0d8c8',
 };
 
 /* ─── Loading skeleton ─── */
@@ -79,16 +80,16 @@ function SkeletonCard() {
 
 /* ─── Main Page ─── */
 export default function RegionControlPage() {
-  const [summary,  setSummary]  = useState<Summary | null>(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState<string | null>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!API_BASE) { setError("API URL not set"); setLoading(false); return; }
     setLoading(true);
     setError(null);
     try {
-      const res  = await fetch(`${API_BASE}/superdashboard/regions`);
+      const res = await fetch(`${API_BASE}/superdashboard/regions`);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setSummary(data);
@@ -101,14 +102,16 @@ export default function RegionControlPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  if (loading) return <LoadingScreen />;
+
   /* ─ Stats cards ─ */
   const stats = summary
     ? [
-        { label: 'Total Cities',      value: String(summary.totalCities),   icon: MapPin     },
-        { label: 'Total Businesses',  value: String(summary.totalSalons + summary.totalSpas), icon: Building2  },
-        { label: 'Total Employees',   value: String(summary.totalEmployees), icon: Users      },
-        { label: 'Total Revenue',     value: summary.totalRevenue,           icon: TrendingUp },
-      ]
+      { label: 'Total Cities', value: String(summary.totalCities), icon: MapPin },
+      { label: 'Total Businesses', value: String(summary.totalSalons + summary.totalSpas), icon: Building2 },
+      { label: 'Total Employees', value: String(summary.totalEmployees), icon: Users },
+      { label: 'Total Revenue', value: summary.totalRevenue, icon: TrendingUp },
+    ]
     : [];
 
   /* ─ Chart data: top 5 cities by salon count ─ */
@@ -150,14 +153,14 @@ export default function RegionControlPage() {
         {loading
           ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
           : stats.map((stat, idx) => (
-              <div key={idx} className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#F2EFE6] shadow-sm">
-                <div className="flex justify-between items-start mb-3 sm:mb-4">
-                  <p className="text-[#8C877D] text-xs sm:text-sm font-medium leading-snug">{stat.label}</p>
-                  <stat.icon size={16} className="text-[#D4A117] flex-shrink-0" strokeWidth={1.5} />
-                </div>
-                <p className="text-2xl sm:text-3xl font-serif font-bold text-[#2D2A26]">{stat.value}</p>
+            <div key={idx} className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#F2EFE6] shadow-sm">
+              <div className="flex justify-between items-start mb-3 sm:mb-4">
+                <p className="text-[#8C877D] text-xs sm:text-sm font-medium leading-snug">{stat.label}</p>
+                <stat.icon size={16} className="text-[#D4A117] flex-shrink-0" strokeWidth={1.5} />
               </div>
-            ))
+              <p className="text-2xl sm:text-3xl font-serif font-bold text-[#2D2A26]">{stat.value}</p>
+            </div>
+          ))
         }
       </div>
 

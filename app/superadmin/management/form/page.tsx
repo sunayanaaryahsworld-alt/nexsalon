@@ -2,8 +2,9 @@
 
 export const dynamic = "force-dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 type BlogForm = {
   title: string;
@@ -27,11 +28,11 @@ export default function BlogFormPage() {
   const router = useRouter();
   const params = useParams();
   const locale =
-  typeof params?.locale === "string"
-    ? params.locale
-    : "en";
+    typeof params?.locale === "string"
+      ? params.locale
+      : "en";
 
- const [form, setForm] = useState<BlogForm>({
+  const [form, setForm] = useState<BlogForm>({
     title: "",
     slug: "",
     excerpt: "",
@@ -43,6 +44,14 @@ export default function BlogFormPage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setInitialLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (initialLoading) return <LoadingScreen />;
 
   const generateSlug = (title: string) => {
     return title
@@ -86,15 +95,14 @@ export default function BlogFormPage() {
       formData.append("date", form.date);
       formData.append("image", imageFile);
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL;
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
-const API_URL = `${API_BASE}/blog/create`;
-  
+      const API_URL = `${API_BASE}/blog/create`;
+
       const res = await fetch(API_URL, {
-  method: "POST",
-  body: formData,
-});
+        method: "POST",
+        body: formData,
+      });
 
       if (!res.ok) {
         const err = await res.json();
